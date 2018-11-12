@@ -1,4 +1,5 @@
 [![Build Status][travisci-image]][travisci-url]
+[![Go Report Card][goreport-image]][goreport-url]
 
 # Flax
 
@@ -31,3 +32,6 @@ Supporting the following features:
 
 [travisci-url]: https://travis-ci.org/moorara/flax
 [travisci-image]: https://travis-ci.org/moorara/flax.svg?branch=master
+
+[goreport-url]: https://goreportcard.com/report/github.com/moorara/flax
+[goreport-image]: https://goreportcard.com/badge/github.com/moorara/flax
