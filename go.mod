@@ -9,10 +9,12 @@ require (
 	github.com/go-stack/stack v1.8.0 // indirect
 	github.com/gogo/protobuf v1.1.1 // indirect
 	github.com/golang/protobuf v1.2.0 // indirect
+	github.com/gorilla/mux v1.6.2
 	github.com/kr/logfmt v0.0.0-20140226030751-b84e30acd515 // indirect
 	github.com/matttproud/golang_protobuf_extensions v1.0.1 // indirect
 	github.com/moorara/chia v0.1.0
 	github.com/moorara/goto v0.1.5
+	github.com/moorara/microservices-demo v0.0.0-20181111011554-bab45e39213d // indirect
 	github.com/opentracing/opentracing-go v1.0.2
 	github.com/pkg/errors v0.8.0 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
@@ -27,4 +29,5 @@ require (
 	go.uber.org/atomic v1.3.2 // indirect
 	golang.org/x/net v0.0.0-20181108082009-03003ca0c849 // indirect
 	golang.org/x/sync v0.0.0-20181108010431-42b317875d0f // indirect
+	gopkg.in/yaml.v2 v2.2.1
 )
