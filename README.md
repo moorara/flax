@@ -1,3 +1,5 @@
+[![Build Status][travisci-image]][travisci-url]
+
 # Flax
 
 This is a **work-in-progress** utility for mocking APIs.
