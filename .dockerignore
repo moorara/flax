@@ -1,0 +1,12 @@
+# Compiled files
+main
+flax
+flax-*
+
+# Test files
+*.log
+*.out
+*.test
+coverage/
+
+# Misc files
