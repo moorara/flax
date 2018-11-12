@@ -1,0 +1,8 @@
+{
+  "store": {
+    "users": [
+      { "id": "d93ce179-50f7-469e-bb36-1b3746145f00", "firstName": "John", "lastName": "Doe", "email": "john.doe@example.com" },
+      { "id": "8cd6ef6c-2095-4c75-bc66-6f38e785299d", "firstName": "Milad", "lastName": "Irannejad", "email": "milad@example.com" }
+    ]
+  }
+}
