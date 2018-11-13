@@ -6,8 +6,7 @@ import (
 
 const (
 	defaultLogLevel        = "info"
-	defaultHTTPPort        = ":8080"
-	defaultHTTPSPort       = ":8443"
+	defaultControlPort     = ":9000"
 	defaultJaegerAgentAddr = "localhost:6831"
 	defaultJaegerLogSpans  = false
 )
@@ -15,14 +14,12 @@ const (
 // Config defines the configuration values
 var Config = struct {
 	LogLevel        string
-	HTTPPort        string
-	HTTPSPort       string
+	ControlPort     string
 	JaegerAgentAddr string
 	JaegerLogSpans  bool
 }{
 	LogLevel:        defaultLogLevel,
-	HTTPPort:        defaultHTTPPort,
-	HTTPSPort:       defaultHTTPSPort,
+	ControlPort:     defaultControlPort,
 	JaegerAgentAddr: defaultJaegerAgentAddr,
 	JaegerLogSpans:  defaultJaegerLogSpans,
 }
