@@ -10,9 +10,11 @@ import (
 
 // Metrics defines all the metrics
 type Metrics struct {
-	Registry      *prometheus.Registry
-	OpLatencyHist *prometheus.HistogramVec
-	OpLatencySumm *prometheus.SummaryVec
+	Registry         *prometheus.Registry
+	OpLatencyHist    *prometheus.HistogramVec
+	OpLatencySumm    *prometheus.SummaryVec
+	HTTPDurationHist *prometheus.HistogramVec
+	HTTPDurationSumm *prometheus.SummaryVec
 }
 
 // New creates a new metrics
@@ -50,13 +52,40 @@ func New(namespace string) *Metrics {
 		[]string{"op", "success"},
 	)
 
+	HTTPDurationHist := prometheus.NewHistogramVec(
+		prometheus.HistogramOpts{
+			Name:    "http_requests_duration_seconds",
+			Help:    "duration of http requests",
+			Buckets: []float64{0.01, 0.10, 0.50, 1.00, 2.00},
+		},
+		[]string{"method", "url", "statusCode", "statusClass"},
+	)
+
+	HTTPDurationSumm := prometheus.NewSummaryVec(
+		prometheus.SummaryOpts{
+			Name: "http_requests_duration_quantiles_seconds",
+			Help: "duration quantiles of http requests",
+			Objectives: map[float64]float64{
+				0.1:  0.1,
+				0.5:  0.05,
+				0.95: 0.01,
+				0.99: 0.001,
+			},
+		},
+		[]string{"method", "url", "statusCode", "statusClass"},
+	)
+
 	registry.MustRegister(OpLatencySumm)
 	registry.MustRegister(OpLatencyHist)
+	registry.MustRegister(HTTPDurationHist)
+	registry.MustRegister(HTTPDurationSumm)
 
 	return &Metrics{
-		Registry:      registry,
-		OpLatencyHist: OpLatencyHist,
-		OpLatencySumm: OpLatencySumm,
+		Registry:         registry,
+		OpLatencyHist:    OpLatencyHist,
+		OpLatencySumm:    OpLatencySumm,
+		HTTPDurationHist: HTTPDurationHist,
+		HTTPDurationSumm: HTTPDurationSumm,
 	}
 }
 

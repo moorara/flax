@@ -6,7 +6,7 @@ import (
 
 const (
 	defaultLogLevel        = "info"
-	defaultControlPort     = ":9000"
+	defaultControlPort     = ":10000"
 	defaultJaegerAgentAddr = "localhost:6831"
 	defaultJaegerLogSpans  = false
 )
