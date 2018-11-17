@@ -8,14 +8,14 @@
 
   "rest": [
     {
-      "name": "car",
+      "basePath": "/cars",
       "store": [
         { "id": "ad2bd67b-172e-4778-a8a3-7cfb626685b9", "make": "Mazda", "model": "CX-5" },
         { "id": "26ee9c87-fdbb-48cf-be0a-add9a3d87189", "make": "Hyundai", "model": "Sonata" }
       ]
     },
     {
-      "name": "team",
+      "basePath": "/teams",
       "store": [
         { "_id": "d93ce179-50f7-469e-bb36-1b3746145f00", "name": "Back-end", "tags": [ "go", "cloud" ] },
         { "_id": "8cd6ef6c-2095-4c75-bc66-6f38e785299d", "name": "Front-end", "tags": [ "react", "redux" ] }
