@@ -7,27 +7,43 @@
   "http": [
     {
       "methods": [ "GET" ],
-      "path": "/health",
-      "statusCode": 200
-    },
-    {
-      "methods": [ "GET" ],
-      "path": "/current/user",
+      "path": "/me",
       "queries": {
-        "type": "\\w+"
+        "tenantId": "\\w+"
       },
-      "reqHeaders": {
+      "headers": {
         "Authorization": "Bearer .*"
       },
-      "delay": "100ms",
-      "statusCode": 200,
-      "resHeaders": {
-        "Token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9"
+      "response": {
+        "delay": "100ms",
+        "status": 200,
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "id": "5da8349a-0707-4064-8fad-74cedb48a8fc",
+          "name": "John Doe",
+          "email": "john.doe@example.com"
+        }
+      }
+    },
+    {
+      "methods": [ "POST", "PUT" ],
+      "path": "/v1/sessions",
+      "prefix": true,
+      "queries": {
+        "tenantId": "\\w+"
       },
-      "body": {
-        "id": "5da8349a-0707-4064-8fad-74cedb48a8fc",
-        "name": "John Doe",
-        "email": "john.doe@example.com"
+      "headers": {
+        "Accept": "application/json",
+        "Content-Type": "application/json"
+      },
+      "forward": {
+        "delay": "100ms",
+        "to": "http://session-manager:8800/api/v1/sessions",
+        "headers": {
+          "Referer": "flax"
+        }
       }
     }
   ],
@@ -35,26 +51,33 @@
   "rest": [
     {
       "basePath": "/api/v1/cars",
-      "store": [
-        { "id": "ad2bd67b-172e-4778-a8a3-7cfb626685b9", "make": "Mazda", "model": "CX-5" },
-        { "id": "26ee9c87-fdbb-48cf-be0a-add9a3d87189", "make": "Hyundai", "model": "Sonata" }
-      ]
+      "store": {
+        "objects": [
+          { "id": "ad2bd67b-172e-4778-a8a3-7cfb626685b9", "make": "Mazda", "model": "CX-5" },
+          { "id": "26ee9c87-fdbb-48cf-be0a-add9a3d87189", "make": "Hyundai", "model": "Sonata" }
+        ]
+      }
     },
     {
       "basePath": "/api/v1/teams",
-      "reqHeaders": {
+      "headers": {
         "Authorization": "Bearer .*"
       },
-      "delay": "100ms",
-      "resHeaders": {
-        "Token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9"
+      "response": {
+        "delay": "100ms",
+        "deleteStatus": 204,
+        "listProperty": "data",
+        "headers": {
+          "Content-Type": "application/json"
+        }
       },
-      "identifier": "_id",
-      "listHandle": "data",
-      "store": [
-        { "_id": "d93ce179-50f7-469e-bb36-1b3746145f00", "name": "Back-end", "tags": [ "go", "cloud" ] },
-        { "_id": "8cd6ef6c-2095-4c75-bc66-6f38e785299d", "name": "Front-end", "tags": [ "react", "redux" ] }
-      ]
+      "store": {
+        "identifier": "_id",
+        "objects": [
+          { "_id": "d93ce179-50f7-469e-bb36-1b3746145f00", "name": "Back-end", "tags": [ "cloud", "go" ] },
+          { "_id": "8cd6ef6c-2095-4c75-bc66-6f38e785299d", "name": "Front-end", "tags": [ "react", "redux" ] }
+        ]
+      }
     }
   ]
 }

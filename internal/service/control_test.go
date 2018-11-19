@@ -29,7 +29,7 @@ func TestNewControlService(t *testing.T) {
 	}
 }
 
-func TestAddHTTPMock(t *testing.T) {
+func TestAddHTTPMocks(t *testing.T) {
 	tests := []struct {
 		name string
 	}{}
@@ -41,7 +41,7 @@ func TestAddHTTPMock(t *testing.T) {
 	}
 }
 
-func TestAddRESTMock(t *testing.T) {
+func TestAddRESTMocks(t *testing.T) {
 	tests := []struct {
 		name string
 	}{}
@@ -53,7 +53,7 @@ func TestAddRESTMock(t *testing.T) {
 	}
 }
 
-func TestRemoveHTTPMock(t *testing.T) {
+func TestRemoveHTTPMocks(t *testing.T) {
 	tests := []struct {
 		name string
 	}{}
@@ -65,7 +65,7 @@ func TestRemoveHTTPMock(t *testing.T) {
 	}
 }
 
-func TestRemoveRESTMock(t *testing.T) {
+func TestRemoveRESTMocks(t *testing.T) {
 	tests := []struct {
 		name string
 	}{}
