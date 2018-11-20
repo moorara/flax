@@ -21,7 +21,7 @@ type (
 	Spec struct {
 		Config    Config     `json:"config" yaml:"config"`
 		HTTPMocks []HTTPMock `json:"http" yaml:"http"`
-		RESTMock  []RESTMock `json:"rest" yaml:"rest"`
+		RESTMocks []RESTMock `json:"rest" yaml:"rest"`
 	}
 )
 
@@ -50,11 +50,11 @@ func ReadSpec(path string) (*Spec, error) {
 	}
 
 	for i := range spec.HTTPMocks {
-		spec.HTTPMocks[i] = spec.HTTPMocks[i].withDefaults()
+		spec.HTTPMocks[i] = spec.HTTPMocks[i].WithDefaults()
 	}
 
-	for i := range spec.RESTMock {
-		spec.RESTMock[i] = spec.RESTMock[i].withDefaults()
+	for i := range spec.RESTMocks {
+		spec.RESTMocks[i] = spec.RESTMocks[i].WithDefaults()
 	}
 
 	return spec, nil
