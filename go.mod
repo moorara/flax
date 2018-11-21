@@ -9,6 +9,7 @@ require (
 	github.com/gogo/protobuf v1.1.1 // indirect
 	github.com/golang/protobuf v1.2.0 // indirect
 	github.com/gorilla/mux v1.6.2
+	github.com/julienschmidt/httprouter v1.2.0 // indirect
 	github.com/kr/logfmt v0.0.0-20140226030751-b84e30acd515 // indirect
 	github.com/matttproud/golang_protobuf_extensions v1.0.1 // indirect
 	github.com/moorara/chia v0.1.0
@@ -16,7 +17,7 @@ require (
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/prometheus/client_golang v0.9.1
 	github.com/prometheus/client_model v0.0.0-20180712105110-5c3871d89910 // indirect
-	github.com/prometheus/common v0.0.0-20181116084131-1f2c4f3cd6db // indirect
+	github.com/prometheus/common v0.0.0-20181116084131-1f2c4f3cd6db
 	github.com/prometheus/procfs v0.0.0-20181005140218-185b4288413d // indirect
 	github.com/stretchr/testify v1.2.2
 	golang.org/x/sync v0.0.0-20181108010431-42b317875d0f // indirect

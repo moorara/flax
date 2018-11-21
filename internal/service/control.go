@@ -22,7 +22,7 @@ type (
 	controlService struct {
 		logger  *log.Logger
 		metrics *metrics.Metrics
-		routes  map[uint64]mux.Route
+		mocks   map[uint64]model.Mock
 	}
 )
 
@@ -31,54 +31,71 @@ func NewControlService(port string, logger *log.Logger, metrics *metrics.Metrics
 	return &controlService{
 		logger:  logger,
 		metrics: metrics,
-		routes:  map[uint64]mux.Route{},
+		mocks:   map[uint64]model.Mock{},
 	}
 }
 
+func (s *controlService) getRouter() *mux.Router {
+	router := mux.NewRouter()
+	for _, m := range s.mocks {
+		m.RegisterRoute(router, s.logger, s.metrics)
+	}
+
+	return router
+}
+
 func (s *controlService) AddHTTPMocks(w http.ResponseWriter, r *http.Request) {
-	mocks := []model.HTTPMock{}
-	if err := json.NewDecoder(r.Body).Decode(mocks); err != nil {
+	httpMocks := []model.HTTPMock{}
+	if err := json.NewDecoder(r.Body).Decode(httpMocks); err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
-	// Add Routes
+	for _, m := range httpMocks {
+		s.mocks[m.Hash()] = m
+	}
 
 	w.WriteHeader(http.StatusOK)
 }
 
 func (s *controlService) AddRESTMocks(w http.ResponseWriter, r *http.Request) {
-	mocks := []model.RESTMock{}
-	if err := json.NewDecoder(r.Body).Decode(mocks); err != nil {
+	restMocks := []model.RESTMock{}
+	if err := json.NewDecoder(r.Body).Decode(restMocks); err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
-	// Add Routes
+	for _, m := range restMocks {
+		s.mocks[m.Hash()] = m
+	}
 
 	w.WriteHeader(http.StatusOK)
 }
 
 func (s *controlService) RemoveHTTPMocks(w http.ResponseWriter, r *http.Request) {
-	mocks := []model.HTTPMock{}
-	if err := json.NewDecoder(r.Body).Decode(mocks); err != nil {
+	httpMocks := []model.HTTPMock{}
+	if err := json.NewDecoder(r.Body).Decode(httpMocks); err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
-	// Delete Routes
+	for _, m := range httpMocks {
+		delete(s.mocks, m.Hash())
+	}
 
 	w.WriteHeader(http.StatusOK)
 }
 
 func (s *controlService) RemoveRESTMocks(w http.ResponseWriter, r *http.Request) {
-	mocks := []model.RESTMock{}
-	if err := json.NewDecoder(r.Body).Decode(mocks); err != nil {
+	restMocks := []model.RESTMock{}
+	if err := json.NewDecoder(r.Body).Decode(restMocks); err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
-	// Delete Routes
+	for _, m := range restMocks {
+		delete(s.mocks, m.Hash())
+	}
 
 	w.WriteHeader(http.StatusOK)
 }
