@@ -1,8 +1,15 @@
 package model
 
 import (
+	"fmt"
 	"hash/fnv"
+	"net/http"
 	"path"
+	"sort"
+
+	"github.com/gorilla/mux"
+	"github.com/moorara/flax/pkg/log"
+	"github.com/moorara/flax/pkg/metrics"
 )
 
 type (
@@ -32,9 +39,9 @@ type (
 
 	// HTTPMock represents an http mock
 	HTTPMock struct {
-		HTTPExpect    `json:",inline" yaml:",inline"`
-		*HTTPResponse `json:"response" yaml:"response"`
-		*HTTPForward  `json:"forward" yaml:"forward"`
+		HTTPExpect   `json:",inline" yaml:",inline"`
+		HTTPResponse `json:"response" yaml:"response"`
+		HTTPForward  `json:"forward" yaml:"forward"`
 	}
 )
 
@@ -57,6 +64,60 @@ func (e HTTPExpect) WithDefaults() HTTPExpect {
 	}
 
 	return e
+}
+
+// Hash calculates a hash for an http expectation
+func (e HTTPExpect) Hash() uint64 {
+	hash := fnv.New64a()
+
+	sort.Strings(e.Methods)
+	for _, m := range e.Methods {
+		hash.Write([]byte(m))
+	}
+
+	hash.Write([]byte(e.Path))
+
+	if e.Prefix {
+		hash.Write([]byte("true"))
+	} else {
+		hash.Write([]byte("false"))
+	}
+
+	queries := []Pair{}
+	for name, value := range e.Queries {
+		queries = append(queries, Pair{
+			Name:  name,
+			Value: value,
+		})
+	}
+
+	sort.Slice(queries, func(i, j int) bool {
+		return queries[i].Name < queries[j].Name
+	})
+
+	for _, q := range queries {
+		hash.Write([]byte(q.Name))
+		hash.Write([]byte(q.Value))
+	}
+
+	headers := []Pair{}
+	for name, value := range e.Headers {
+		headers = append(headers, Pair{
+			Name:  name,
+			Value: value,
+		})
+	}
+
+	sort.Slice(headers, func(i, j int) bool {
+		return headers[i].Name < headers[j].Name
+	})
+
+	for _, h := range headers {
+		hash.Write([]byte(h.Name))
+		hash.Write([]byte(h.Value))
+	}
+
+	return hash.Sum64()
 }
 
 // WithDefaults returns an http response with default values
@@ -96,55 +157,36 @@ func (f HTTPForward) WithDefaults() HTTPForward {
 // WithDefaults returns an http mock with default values
 func (m HTTPMock) WithDefaults() HTTPMock {
 	m.HTTPExpect = m.HTTPExpect.WithDefaults()
-
-	if m.HTTPResponse != nil {
-		hr := m.HTTPResponse.WithDefaults()
-		m.HTTPResponse = &hr
-	}
-
-	if m.HTTPForward != nil {
-		hf := m.HTTPForward.WithDefaults()
-		m.HTTPForward = &hf
-	}
+	m.HTTPResponse = m.HTTPResponse.WithDefaults()
+	m.HTTPForward = m.HTTPForward.WithDefaults()
 
 	return m
 }
 
 // Hash calculates a hash for an http mock based on the http expectation values
 func (m HTTPMock) Hash() uint64 {
-	hash := fnv.New64a()
+	return m.HTTPExpect.Hash()
+}
 
-	for _, m := range m.HTTPExpect.Methods {
-		hash.Write([]byte(m))
+// RegisterRoute adds a new router to a Mux router for an http mock
+func (m HTTPMock) RegisterRoute(router *mux.Router, logger *log.Logger, metrics *metrics.Metrics) {
+	route := router.Methods(m.HTTPExpect.Methods...)
+
+	if m.HTTPExpect.Prefix {
+		route.Path(m.HTTPExpect.Path)
+	} else {
+		route.PathPrefix(m.HTTPExpect.Path)
 	}
 
-	hash.Write([]byte(m.HTTPExpect.Path))
-
-	queries := []Pair{}
-	for name, value := range m.HTTPExpect.Queries {
-		queries = append(queries, Pair{
-			Name:  name,
-			Value: value,
-		})
+	for query, pattern := range m.HTTPExpect.Queries {
+		route.Queries(query, fmt.Sprintf("{%s:%s}", query, pattern))
 	}
 
-	for _, q := range queries {
-		hash.Write([]byte(q.Name))
-		hash.Write([]byte(q.Value))
+	for header, pattern := range m.HTTPExpect.Headers {
+		route.HeadersRegexp(header, pattern)
 	}
 
-	headers := []Pair{}
-	for name, value := range m.HTTPExpect.Headers {
-		headers = append(headers, Pair{
-			Name:  name,
-			Value: value,
-		})
-	}
+	route.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
-	for _, h := range headers {
-		hash.Write([]byte(h.Name))
-		hash.Write([]byte(h.Value))
-	}
-
-	return hash.Sum64()
+	})
 }

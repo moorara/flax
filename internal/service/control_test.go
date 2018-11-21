@@ -3,6 +3,7 @@ package service
 import (
 	"testing"
 
+	"github.com/moorara/flax/internal/model"
 	"github.com/moorara/flax/pkg/log"
 	"github.com/moorara/flax/pkg/metrics"
 	"github.com/stretchr/testify/assert"
@@ -29,9 +30,23 @@ func TestNewControlService(t *testing.T) {
 	}
 }
 
+func TestGetRouter(t *testing.T) {
+	tests := []struct {
+		name      string
+		httpMocks []model.HTTPMock
+	}{}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			assert.NotNil(t, tc)
+		})
+	}
+}
+
 func TestAddHTTPMocks(t *testing.T) {
 	tests := []struct {
-		name string
+		name      string
+		httpMocks []model.HTTPMock
 	}{}
 
 	for _, tc := range tests {
@@ -43,7 +58,8 @@ func TestAddHTTPMocks(t *testing.T) {
 
 func TestAddRESTMocks(t *testing.T) {
 	tests := []struct {
-		name string
+		name      string
+		restMocks []model.RESTMock
 	}{}
 
 	for _, tc := range tests {
@@ -55,7 +71,8 @@ func TestAddRESTMocks(t *testing.T) {
 
 func TestRemoveHTTPMocks(t *testing.T) {
 	tests := []struct {
-		name string
+		name      string
+		httpMocks []model.HTTPMock
 	}{}
 
 	for _, tc := range tests {
@@ -67,7 +84,8 @@ func TestRemoveHTTPMocks(t *testing.T) {
 
 func TestRemoveRESTMocks(t *testing.T) {
 	tests := []struct {
-		name string
+		name      string
+		restMocks []model.RESTMock
 	}{}
 
 	for _, tc := range tests {

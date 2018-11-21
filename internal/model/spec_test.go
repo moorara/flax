@@ -10,23 +10,33 @@ var (
 	specSimpleYAML = &Spec{
 		HTTPMocks: []HTTPMock{
 			HTTPMock{
-				HTTPExpect: HTTPExpect{
+				HTTPExpect{
 					Methods: []string{"GET"},
 					Path:    "/health",
 					Prefix:  false,
 					Queries: map[string]string{},
 					Headers: map[string]string{},
 				},
+				HTTPResponse{
+					Delay:      "0",
+					StatusCode: 200,
+					Headers:    map[string]string{},
+				},
+				HTTPForward{
+					Delay:   "0",
+					To:      "",
+					Headers: map[string]string{},
+				},
 			},
 			HTTPMock{
-				HTTPExpect: HTTPExpect{
+				HTTPExpect{
 					Methods: []string{"GET"},
 					Path:    "/me",
 					Prefix:  false,
 					Queries: map[string]string{},
 					Headers: map[string]string{},
 				},
-				HTTPResponse: &HTTPResponse{
+				HTTPResponse{
 					Delay:      "0",
 					StatusCode: 200,
 					Headers:    map[string]string{},
@@ -36,16 +46,26 @@ var (
 						"email": "john.doe@example.com",
 					},
 				},
+				HTTPForward{
+					Delay:   "0",
+					To:      "",
+					Headers: map[string]string{},
+				},
 			},
 			HTTPMock{
-				HTTPExpect: HTTPExpect{
+				HTTPExpect{
 					Methods: []string{"GET"},
 					Path:    "/v1/sessions",
 					Prefix:  true,
 					Queries: map[string]string{},
 					Headers: map[string]string{},
 				},
-				HTTPForward: &HTTPForward{
+				HTTPResponse{
+					Delay:      "0",
+					StatusCode: 200,
+					Headers:    map[string]string{},
+				},
+				HTTPForward{
 					Delay:   "0",
 					To:      "http://session-manager:8800/api/v1/sessions",
 					Headers: map[string]string{},
@@ -99,23 +119,33 @@ var (
 	specSimpleJSON = &Spec{
 		HTTPMocks: []HTTPMock{
 			HTTPMock{
-				HTTPExpect: HTTPExpect{
+				HTTPExpect{
 					Methods: []string{"GET"},
 					Path:    "/health",
 					Prefix:  false,
 					Queries: map[string]string{},
 					Headers: map[string]string{},
 				},
+				HTTPResponse{
+					Delay:      "0",
+					StatusCode: 200,
+					Headers:    map[string]string{},
+				},
+				HTTPForward{
+					Delay:   "0",
+					To:      "",
+					Headers: map[string]string{},
+				},
 			},
 			HTTPMock{
-				HTTPExpect: HTTPExpect{
+				HTTPExpect{
 					Methods: []string{"GET"},
 					Path:    "/me",
 					Prefix:  false,
 					Queries: map[string]string{},
 					Headers: map[string]string{},
 				},
-				HTTPResponse: &HTTPResponse{
+				HTTPResponse{
 					Delay:      "0",
 					StatusCode: 200,
 					Headers:    map[string]string{},
@@ -125,16 +155,26 @@ var (
 						"email": "john.doe@example.com",
 					},
 				},
+				HTTPForward{
+					Delay:   "0",
+					To:      "",
+					Headers: map[string]string{},
+				},
 			},
 			HTTPMock{
-				HTTPExpect: HTTPExpect{
+				HTTPExpect{
 					Methods: []string{"GET"},
 					Path:    "/v1/sessions",
 					Prefix:  true,
 					Queries: map[string]string{},
 					Headers: map[string]string{},
 				},
-				HTTPForward: &HTTPForward{
+				HTTPResponse{
+					Delay:      "0",
+					StatusCode: 200,
+					Headers:    map[string]string{},
+				},
+				HTTPForward{
 					Delay:   "0",
 					To:      "http://session-manager:8800/api/v1/sessions",
 					Headers: map[string]string{},
@@ -192,7 +232,7 @@ var (
 		},
 		HTTPMocks: []HTTPMock{
 			HTTPMock{
-				HTTPExpect: HTTPExpect{
+				HTTPExpect{
 					Methods: []string{"GET"},
 					Path:    "/me",
 					Prefix:  false,
@@ -203,7 +243,7 @@ var (
 						"Authorization": "Bearer .*",
 					},
 				},
-				HTTPResponse: &HTTPResponse{
+				HTTPResponse{
 					Delay:      "100ms",
 					StatusCode: 200,
 					Headers: map[string]string{
@@ -215,9 +255,14 @@ var (
 						"email": "john.doe@example.com",
 					},
 				},
+				HTTPForward{
+					Delay:   "0",
+					To:      "",
+					Headers: map[string]string{},
+				},
 			},
 			HTTPMock{
-				HTTPExpect: HTTPExpect{
+				HTTPExpect{
 					Methods: []string{"POST", "PUT"},
 					Path:    "/v1/sessions",
 					Prefix:  true,
@@ -229,7 +274,12 @@ var (
 						"Content-Type": "application/json",
 					},
 				},
-				HTTPForward: &HTTPForward{
+				HTTPResponse{
+					Delay:      "0",
+					StatusCode: 200,
+					Headers:    map[string]string{},
+				},
+				HTTPForward{
 					Delay: "100ms",
 					To:    "http://session-manager:8800/api/v1/sessions",
 					Headers: map[string]string{
@@ -296,7 +346,7 @@ var (
 		},
 		HTTPMocks: []HTTPMock{
 			HTTPMock{
-				HTTPExpect: HTTPExpect{
+				HTTPExpect{
 					Methods: []string{"GET"},
 					Path:    "/me",
 					Prefix:  false,
@@ -307,7 +357,7 @@ var (
 						"Authorization": "Bearer .*",
 					},
 				},
-				HTTPResponse: &HTTPResponse{
+				HTTPResponse{
 					Delay:      "100ms",
 					StatusCode: 200,
 					Headers: map[string]string{
@@ -319,9 +369,14 @@ var (
 						"email": "john.doe@example.com",
 					},
 				},
+				HTTPForward{
+					Delay:   "0",
+					To:      "",
+					Headers: map[string]string{},
+				},
 			},
 			HTTPMock{
-				HTTPExpect: HTTPExpect{
+				HTTPExpect{
 					Methods: []string{"POST", "PUT"},
 					Path:    "/v1/sessions",
 					Prefix:  true,
@@ -333,7 +388,12 @@ var (
 						"Content-Type": "application/json",
 					},
 				},
-				HTTPForward: &HTTPForward{
+				HTTPResponse{
+					Delay:      "0",
+					StatusCode: 200,
+					Headers:    map[string]string{},
+				},
+				HTTPForward{
 					Delay: "100ms",
 					To:    "http://session-manager:8800/api/v1/sessions",
 					Headers: map[string]string{
@@ -437,7 +497,7 @@ func TestReadSpec(t *testing.T) {
 			expectedError: "invalid character",
 			expectedSpec:  nil,
 		},
-		/* {
+		{
 			name:          "SimpleYAML",
 			path:          "./test/simple.yaml",
 			expectedError: "",
@@ -460,7 +520,7 @@ func TestReadSpec(t *testing.T) {
 			path:          "./test/full.json",
 			expectedError: "",
 			expectedSpec:  specFullJSON,
-		}, */
+		},
 	}
 
 	for _, tc := range tests {

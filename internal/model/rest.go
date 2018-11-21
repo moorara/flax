@@ -2,7 +2,17 @@ package model
 
 import (
 	"hash/fnv"
+	"net/http"
 	"path"
+	"path/filepath"
+
+	"github.com/gorilla/mux"
+	"github.com/moorara/flax/pkg/log"
+	"github.com/moorara/flax/pkg/metrics"
+)
+
+const (
+	idPath = "/{id:[-0-9A-Za-z]+}"
 )
 
 type (
@@ -47,6 +57,13 @@ func (e RESTExpect) WithDefaults() RESTExpect {
 	}
 
 	return e
+}
+
+// Hash calculates a hash for a rest expectation based on the base path
+func (e RESTExpect) Hash() uint64 {
+	hash := fnv.New64a()
+	hash.Write([]byte(e.BasePath))
+	return hash.Sum64()
 }
 
 // WithDefaults returns a rest response with default values
@@ -106,7 +123,86 @@ func (m RESTMock) WithDefaults() RESTMock {
 
 // Hash calculates a hash for a rest mock based on the rest expectation base path
 func (m RESTMock) Hash() uint64 {
-	hash := fnv.New64a()
-	hash.Write([]byte(m.RESTExpect.BasePath))
-	return hash.Sum64()
+	return m.RESTExpect.Hash()
+}
+
+// RegisterRoute adds a new router to a Mux router for a rest mock
+func (m RESTMock) RegisterRoute(router *mux.Router, logger *log.Logger, metrics *metrics.Metrics) {
+	// GET /
+	{
+		path := m.RESTExpect.BasePath
+		route := router.Methods("GET").Path(path)
+		for header, pattern := range m.RESTExpect.Headers {
+			route.HeadersRegexp(header, pattern)
+		}
+
+		route.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+
+		})
+	}
+
+	// POST /
+	{
+		path := m.RESTExpect.BasePath
+		route := router.Methods("POST").Path(path)
+		for header, pattern := range m.RESTExpect.Headers {
+			route.HeadersRegexp(header, pattern)
+		}
+
+		route.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+
+		})
+	}
+
+	// GET /
+	{
+		path := filepath.Join(m.RESTExpect.BasePath, idPath)
+		route := router.Methods("GET").Path(path)
+		for header, pattern := range m.RESTExpect.Headers {
+			route.HeadersRegexp(header, pattern)
+		}
+
+		route.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+
+		})
+	}
+
+	// PUT /
+	{
+		path := filepath.Join(m.RESTExpect.BasePath, idPath)
+		route := router.Methods("PUT").Path(path)
+		for header, pattern := range m.RESTExpect.Headers {
+			route.HeadersRegexp(header, pattern)
+		}
+
+		route.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+
+		})
+	}
+
+	// PATCH /
+	{
+		path := filepath.Join(m.RESTExpect.BasePath, idPath)
+		route := router.Methods("PATCH").Path(path)
+		for header, pattern := range m.RESTExpect.Headers {
+			route.HeadersRegexp(header, pattern)
+		}
+
+		route.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+
+		})
+	}
+
+	// DELETE /
+	{
+		path := filepath.Join(m.RESTExpect.BasePath, idPath)
+		route := router.Methods("DELETE").Path(path)
+		for header, pattern := range m.RESTExpect.Headers {
+			route.HeadersRegexp(header, pattern)
+		}
+
+		route.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+
+		})
+	}
 }
