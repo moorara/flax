@@ -7,34 +7,180 @@ import (
 )
 
 var (
-	specSimple = &Spec{
+	specSimpleYAML = &Spec{
 		HTTPMocks: []HTTPMock{
 			HTTPMock{
-				HTTPExpect{},
-				&HTTPResponse{},
-				&HTTPForward{},
+				HTTPExpect: HTTPExpect{
+					Methods: []string{"GET"},
+					Path:    "/health",
+					Prefix:  false,
+					Queries: map[string]string{},
+					Headers: map[string]string{},
+				},
 			},
 			HTTPMock{
-				HTTPExpect{},
-				&HTTPResponse{},
-				&HTTPForward{},
+				HTTPExpect: HTTPExpect{
+					Methods: []string{"GET"},
+					Path:    "/me",
+					Prefix:  false,
+					Queries: map[string]string{},
+					Headers: map[string]string{},
+				},
+				HTTPResponse: &HTTPResponse{
+					Delay:      "0",
+					StatusCode: 200,
+					Headers:    map[string]string{},
+					Body: map[interface{}]interface{}{
+						"id":    "5da8349a-0707-4064-8fad-74cedb48a8fc",
+						"name":  "John Doe",
+						"email": "john.doe@example.com",
+					},
+				},
 			},
 			HTTPMock{
-				HTTPExpect{},
-				&HTTPResponse{},
-				&HTTPForward{},
+				HTTPExpect: HTTPExpect{
+					Methods: []string{"GET"},
+					Path:    "/v1/sessions",
+					Prefix:  true,
+					Queries: map[string]string{},
+					Headers: map[string]string{},
+				},
+				HTTPForward: &HTTPForward{
+					Delay:   "0",
+					To:      "http://session-manager:8800/api/v1/sessions",
+					Headers: map[string]string{},
+				},
 			},
 		},
 		RESTMocks: []RESTMock{
 			RESTMock{
-				RESTExpect{},
-				RESTResponse{},
-				RESTStore{},
+				RESTExpect{
+					BasePath: "/api/v1/cars",
+					Headers:  map[string]string{},
+				},
+				RESTResponse{
+					Delay:            "0",
+					PostStatusCode:   201,
+					PutStatusCode:    200,
+					PatchStatusCode:  200,
+					DeleteStatusCode: 204,
+					Headers:          map[string]string{},
+				},
+				RESTStore{
+					Objects: []JSON{
+						{"id": "ad2bd67b-172e-4778-a8a3-7cfb626685b9", "make": "Mazda", "model": "CX-5"},
+						{"id": "26ee9c87-fdbb-48cf-be0a-add9a3d87189", "make": "Hyundai", "model": "Sonata"},
+					},
+				},
 			},
 			RESTMock{
-				RESTExpect{},
-				RESTResponse{},
-				RESTStore{},
+				RESTExpect{
+					BasePath: "/api/v1/teams",
+					Headers:  map[string]string{},
+				},
+				RESTResponse{
+					Delay:            "0",
+					PostStatusCode:   201,
+					PutStatusCode:    200,
+					PatchStatusCode:  200,
+					DeleteStatusCode: 204,
+					Headers:          map[string]string{},
+				},
+				RESTStore{
+					Objects: []JSON{
+						{"_id": "d93ce179-50f7-469e-bb36-1b3746145f00", "name": "Back-end", "tags": []interface{}{"cloud", "go"}},
+						{"_id": "8cd6ef6c-2095-4c75-bc66-6f38e785299d", "name": "Front-end", "tags": []interface{}{"react", "redux"}},
+					},
+				},
+			},
+		},
+	}
+
+	specSimpleJSON = &Spec{
+		HTTPMocks: []HTTPMock{
+			HTTPMock{
+				HTTPExpect: HTTPExpect{
+					Methods: []string{"GET"},
+					Path:    "/health",
+					Prefix:  false,
+					Queries: map[string]string{},
+					Headers: map[string]string{},
+				},
+			},
+			HTTPMock{
+				HTTPExpect: HTTPExpect{
+					Methods: []string{"GET"},
+					Path:    "/me",
+					Prefix:  false,
+					Queries: map[string]string{},
+					Headers: map[string]string{},
+				},
+				HTTPResponse: &HTTPResponse{
+					Delay:      "0",
+					StatusCode: 200,
+					Headers:    map[string]string{},
+					Body: map[string]interface{}{
+						"id":    "5da8349a-0707-4064-8fad-74cedb48a8fc",
+						"name":  "John Doe",
+						"email": "john.doe@example.com",
+					},
+				},
+			},
+			HTTPMock{
+				HTTPExpect: HTTPExpect{
+					Methods: []string{"GET"},
+					Path:    "/v1/sessions",
+					Prefix:  true,
+					Queries: map[string]string{},
+					Headers: map[string]string{},
+				},
+				HTTPForward: &HTTPForward{
+					Delay:   "0",
+					To:      "http://session-manager:8800/api/v1/sessions",
+					Headers: map[string]string{},
+				},
+			},
+		},
+		RESTMocks: []RESTMock{
+			RESTMock{
+				RESTExpect{
+					BasePath: "/api/v1/cars",
+					Headers:  map[string]string{},
+				},
+				RESTResponse{
+					Delay:            "0",
+					PostStatusCode:   201,
+					PutStatusCode:    200,
+					PatchStatusCode:  200,
+					DeleteStatusCode: 204,
+					Headers:          map[string]string{},
+				},
+				RESTStore{
+					Objects: []JSON{
+						{"id": "ad2bd67b-172e-4778-a8a3-7cfb626685b9", "make": "Mazda", "model": "CX-5"},
+						{"id": "26ee9c87-fdbb-48cf-be0a-add9a3d87189", "make": "Hyundai", "model": "Sonata"},
+					},
+				},
+			},
+			RESTMock{
+				RESTExpect{
+					BasePath: "/api/v1/teams",
+					Headers:  map[string]string{},
+				},
+				RESTResponse{
+					Delay:            "0",
+					PostStatusCode:   201,
+					PutStatusCode:    200,
+					PatchStatusCode:  200,
+					DeleteStatusCode: 204,
+					Headers:          map[string]string{},
+				},
+				RESTStore{
+					Objects: []JSON{
+						{"_id": "d93ce179-50f7-469e-bb36-1b3746145f00", "name": "Back-end", "tags": []interface{}{"cloud", "go"}},
+						{"_id": "8cd6ef6c-2095-4c75-bc66-6f38e785299d", "name": "Front-end", "tags": []interface{}{"react", "redux"}},
+					},
+				},
 			},
 		},
 	}
@@ -46,26 +192,99 @@ var (
 		},
 		HTTPMocks: []HTTPMock{
 			HTTPMock{
-				HTTPExpect{},
-				&HTTPResponse{},
-				&HTTPForward{},
+				HTTPExpect: HTTPExpect{
+					Methods: []string{"GET"},
+					Path:    "/me",
+					Prefix:  false,
+					Queries: map[string]string{
+						"tenantId": "\\w+",
+					},
+					Headers: map[string]string{
+						"Authorization": "Bearer .*",
+					},
+				},
+				HTTPResponse: &HTTPResponse{
+					Delay:      "100ms",
+					StatusCode: 200,
+					Headers: map[string]string{
+						"Content-Type": "application/json",
+					},
+					Body: map[interface{}]interface{}{
+						"id":    "5da8349a-0707-4064-8fad-74cedb48a8fc",
+						"name":  "John Doe",
+						"email": "john.doe@example.com",
+					},
+				},
 			},
 			HTTPMock{
-				HTTPExpect{},
-				&HTTPResponse{},
-				&HTTPForward{},
+				HTTPExpect: HTTPExpect{
+					Methods: []string{"POST", "PUT"},
+					Path:    "/v1/sessions",
+					Prefix:  true,
+					Queries: map[string]string{
+						"tenantId": "\\w+",
+					},
+					Headers: map[string]string{
+						"Accept":       "application/json",
+						"Content-Type": "application/json",
+					},
+				},
+				HTTPForward: &HTTPForward{
+					Delay: "100ms",
+					To:    "http://session-manager:8800/api/v1/sessions",
+					Headers: map[string]string{
+						"Referer": "flax",
+					},
+				},
 			},
 		},
 		RESTMocks: []RESTMock{
 			RESTMock{
-				RESTExpect{},
-				RESTResponse{},
-				RESTStore{},
+				RESTExpect{
+					BasePath: "/api/v1/cars",
+					Headers:  map[string]string{},
+				},
+				RESTResponse{
+					Delay:            "0",
+					PostStatusCode:   201,
+					PutStatusCode:    200,
+					PatchStatusCode:  200,
+					DeleteStatusCode: 204,
+					ListProperty:     "",
+					Headers:          map[string]string{},
+				},
+				RESTStore{
+					Objects: []JSON{
+						{"id": "ad2bd67b-172e-4778-a8a3-7cfb626685b9", "make": "Mazda", "model": "CX-5"},
+						{"id": "26ee9c87-fdbb-48cf-be0a-add9a3d87189", "make": "Hyundai", "model": "Sonata"},
+					},
+				},
 			},
 			RESTMock{
-				RESTExpect{},
-				RESTResponse{},
-				RESTStore{},
+				RESTExpect{
+					BasePath: "/api/v1/teams",
+					Headers: map[string]string{
+						"Authorization": "Bearer .*",
+					},
+				},
+				RESTResponse{
+					Delay:            "100ms",
+					PostStatusCode:   202,
+					PutStatusCode:    201,
+					PatchStatusCode:  201,
+					DeleteStatusCode: 202,
+					ListProperty:     "data",
+					Headers: map[string]string{
+						"Content-Type": "application/json",
+					},
+				},
+				RESTStore{
+					Identifier: "_id",
+					Objects: []JSON{
+						{"_id": "d93ce179-50f7-469e-bb36-1b3746145f00", "name": "Back-end", "tags": []interface{}{"cloud", "go"}},
+						{"_id": "8cd6ef6c-2095-4c75-bc66-6f38e785299d", "name": "Front-end", "tags": []interface{}{"react", "redux"}},
+					},
+				},
 			},
 		},
 	}
@@ -77,26 +296,99 @@ var (
 		},
 		HTTPMocks: []HTTPMock{
 			HTTPMock{
-				HTTPExpect{},
-				&HTTPResponse{},
-				&HTTPForward{},
+				HTTPExpect: HTTPExpect{
+					Methods: []string{"GET"},
+					Path:    "/me",
+					Prefix:  false,
+					Queries: map[string]string{
+						"tenantId": "\\w+",
+					},
+					Headers: map[string]string{
+						"Authorization": "Bearer .*",
+					},
+				},
+				HTTPResponse: &HTTPResponse{
+					Delay:      "100ms",
+					StatusCode: 200,
+					Headers: map[string]string{
+						"Content-Type": "application/json",
+					},
+					Body: map[string]interface{}{
+						"id":    "5da8349a-0707-4064-8fad-74cedb48a8fc",
+						"name":  "John Doe",
+						"email": "john.doe@example.com",
+					},
+				},
 			},
 			HTTPMock{
-				HTTPExpect{},
-				&HTTPResponse{},
-				&HTTPForward{},
+				HTTPExpect: HTTPExpect{
+					Methods: []string{"POST", "PUT"},
+					Path:    "/v1/sessions",
+					Prefix:  true,
+					Queries: map[string]string{
+						"tenantId": "\\w+",
+					},
+					Headers: map[string]string{
+						"Accept":       "application/json",
+						"Content-Type": "application/json",
+					},
+				},
+				HTTPForward: &HTTPForward{
+					Delay: "100ms",
+					To:    "http://session-manager:8800/api/v1/sessions",
+					Headers: map[string]string{
+						"Referer": "flax",
+					},
+				},
 			},
 		},
 		RESTMocks: []RESTMock{
 			RESTMock{
-				RESTExpect{},
-				RESTResponse{},
-				RESTStore{},
+				RESTExpect{
+					BasePath: "/api/v1/cars",
+					Headers:  map[string]string{},
+				},
+				RESTResponse{
+					Delay:            "0",
+					PostStatusCode:   201,
+					PutStatusCode:    200,
+					PatchStatusCode:  200,
+					DeleteStatusCode: 204,
+					ListProperty:     "",
+					Headers:          map[string]string{},
+				},
+				RESTStore{
+					Objects: []JSON{
+						{"id": "ad2bd67b-172e-4778-a8a3-7cfb626685b9", "make": "Mazda", "model": "CX-5"},
+						{"id": "26ee9c87-fdbb-48cf-be0a-add9a3d87189", "make": "Hyundai", "model": "Sonata"},
+					},
+				},
 			},
 			RESTMock{
-				RESTExpect{},
-				RESTResponse{},
-				RESTStore{},
+				RESTExpect{
+					BasePath: "/api/v1/teams",
+					Headers: map[string]string{
+						"Authorization": "Bearer .*",
+					},
+				},
+				RESTResponse{
+					Delay:            "100ms",
+					PostStatusCode:   202,
+					PutStatusCode:    201,
+					PatchStatusCode:  201,
+					DeleteStatusCode: 202,
+					ListProperty:     "data",
+					Headers: map[string]string{
+						"Content-Type": "application/json",
+					},
+				},
+				RESTStore{
+					Identifier: "_id",
+					Objects: []JSON{
+						{"_id": "d93ce179-50f7-469e-bb36-1b3746145f00", "name": "Back-end", "tags": []interface{}{"cloud", "go"}},
+						{"_id": "8cd6ef6c-2095-4c75-bc66-6f38e785299d", "name": "Front-end", "tags": []interface{}{"react", "redux"}},
+					},
+				},
 			},
 		},
 	}
@@ -149,13 +441,13 @@ func TestReadSpec(t *testing.T) {
 			name:          "SimpleYAML",
 			path:          "./test/simple.yaml",
 			expectedError: "",
-			expectedSpec:  specSimple,
+			expectedSpec:  specSimpleYAML,
 		},
 		{
 			name:          "SimpleJSON",
 			path:          "./test/simple.json",
 			expectedError: "",
-			expectedSpec:  specSimple,
+			expectedSpec:  specSimpleJSON,
 		},
 		{
 			name:          "FullYAML",

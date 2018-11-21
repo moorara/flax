@@ -65,7 +65,10 @@
       },
       "response": {
         "delay": "100ms",
-        "deleteStatus": 204,
+        "postStatus": 202,
+        "putStatus": 201,
+        "patchStatus": 201,
+        "deleteStatus": 202,
         "listProperty": "data",
         "headers": {
           "Content-Type": "application/json"

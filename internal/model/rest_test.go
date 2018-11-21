@@ -8,43 +8,58 @@ import (
 
 func TestRESTExpectWithDefaults(t *testing.T) {
 	tests := []struct {
-		name string
-	}{}
-
-	for _, tc := range tests {
-		t.Run(tc.name, func(t *testing.T) {
-			assert.NotNil(t, tc)
-		})
+		name           string
+		expect         RESTExpect
+		expectedExpect RESTExpect
+	}{
+		{
+			"Empty",
+			RESTExpect{},
+			RESTExpect{
+				BasePath: "/",
+				Headers:  map[string]string{},
+			},
+		},
+		{
+			"DefaultRequired",
+			RESTExpect{
+				BasePath: "/cars",
+			},
+			RESTExpect{
+				BasePath: "/cars",
+				Headers:  map[string]string{},
+			},
+		},
+		{
+			"NoDefaultRequired",
+			RESTExpect{
+				BasePath: "/teams",
+				Headers: map[string]string{
+					"Accept":       "application/json",
+					"Content-Type": "application/json",
+				},
+			},
+			RESTExpect{
+				BasePath: "/teams",
+				Headers: map[string]string{
+					"Accept":       "application/json",
+					"Content-Type": "application/json",
+				},
+			},
+		},
 	}
-}
-
-func TestRESTExpectHash(t *testing.T) {
-	tests := []struct {
-		name string
-	}{}
 
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			assert.NotNil(t, tc)
+			assert.Equal(t, tc.expectedExpect, tc.expect.WithDefaults())
 		})
 	}
 }
 
 func TestRESTResponseWithDefaults(t *testing.T) {
 	tests := []struct {
-		name string
-	}{}
-
-	for _, tc := range tests {
-		t.Run(tc.name, func(t *testing.T) {
-			assert.NotNil(t, tc)
-		})
-	}
-}
-
-func TestRESTResponseHash(t *testing.T) {
-	tests := []struct {
-		name string
+		name     string
+		response RESTResponse
 	}{}
 
 	for _, tc := range tests {
@@ -56,19 +71,8 @@ func TestRESTResponseHash(t *testing.T) {
 
 func TestRESTStoreWithDefaults(t *testing.T) {
 	tests := []struct {
-		name string
-	}{}
-
-	for _, tc := range tests {
-		t.Run(tc.name, func(t *testing.T) {
-			assert.NotNil(t, tc)
-		})
-	}
-}
-
-func TestRESTStoreHash(t *testing.T) {
-	tests := []struct {
-		name string
+		name  string
+		store RESTExpect
 	}{}
 
 	for _, tc := range tests {
@@ -81,6 +85,7 @@ func TestRESTStoreHash(t *testing.T) {
 func TestRESTMockWithDefaults(t *testing.T) {
 	tests := []struct {
 		name string
+		mock RESTMock
 	}{}
 
 	for _, tc := range tests {
