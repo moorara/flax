@@ -45,7 +45,10 @@ rest:
       Authorization: "Bearer .*"
     response:
       delay: 100ms
-      delete_status: 204
+      post_status: 202
+      put_status: 201
+      patch_status: 201
+      delete_status: 202
       list_property: data
       headers:
         Content-Type: "application/json"

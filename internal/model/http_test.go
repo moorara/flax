@@ -8,43 +8,74 @@ import (
 
 func TestHTTPExpectWithDefaults(t *testing.T) {
 	tests := []struct {
-		name string
-	}{}
-
-	for _, tc := range tests {
-		t.Run(tc.name, func(t *testing.T) {
-			assert.NotNil(t, tc)
-		})
+		name           string
+		expect         HTTPExpect
+		expectedExpect HTTPExpect
+	}{
+		{
+			"Empty",
+			HTTPExpect{},
+			HTTPExpect{
+				Methods: []string{"GET"},
+				Path:    "/",
+				Prefix:  false,
+				Queries: map[string]string{},
+				Headers: map[string]string{},
+			},
+		},
+		{
+			"DefaultRequired",
+			HTTPExpect{
+				Path: "/health",
+			},
+			HTTPExpect{
+				Methods: []string{"GET"},
+				Path:    "/health",
+				Prefix:  false,
+				Queries: map[string]string{},
+				Headers: map[string]string{},
+			},
+		},
+		{
+			"NoDefaultRequired",
+			HTTPExpect{
+				Methods: []string{"POST", "PUT"},
+				Path:    "/sessions",
+				Prefix:  true,
+				Queries: map[string]string{
+					"tenantId": "\\w+",
+				},
+				Headers: map[string]string{
+					"Accept":       "application/json",
+					"Content-Type": "application/json",
+				},
+			},
+			HTTPExpect{
+				Methods: []string{"POST", "PUT"},
+				Path:    "/sessions",
+				Prefix:  true,
+				Queries: map[string]string{
+					"tenantId": "\\w+",
+				},
+				Headers: map[string]string{
+					"Accept":       "application/json",
+					"Content-Type": "application/json",
+				},
+			},
+		},
 	}
-}
-
-func TestHTTPExpectHash(t *testing.T) {
-	tests := []struct {
-		name string
-	}{}
 
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			assert.NotNil(t, tc)
+			assert.Equal(t, tc.expectedExpect, tc.expect.WithDefaults())
 		})
 	}
 }
 
 func TestHTTPResponseWithDefaults(t *testing.T) {
 	tests := []struct {
-		name string
-	}{}
-
-	for _, tc := range tests {
-		t.Run(tc.name, func(t *testing.T) {
-			assert.NotNil(t, tc)
-		})
-	}
-}
-
-func TestHTTPResponseHash(t *testing.T) {
-	tests := []struct {
-		name string
+		name     string
+		response HTTPResponse
 	}{}
 
 	for _, tc := range tests {
@@ -56,19 +87,8 @@ func TestHTTPResponseHash(t *testing.T) {
 
 func TestHTTPForwardWithDefaults(t *testing.T) {
 	tests := []struct {
-		name string
-	}{}
-
-	for _, tc := range tests {
-		t.Run(tc.name, func(t *testing.T) {
-			assert.NotNil(t, tc)
-		})
-	}
-}
-
-func TestHTTPForwardHash(t *testing.T) {
-	tests := []struct {
-		name string
+		name    string
+		forward HTTPForward
 	}{}
 
 	for _, tc := range tests {
@@ -81,6 +101,7 @@ func TestHTTPForwardHash(t *testing.T) {
 func TestHTTPMockWithDefaults(t *testing.T) {
 	tests := []struct {
 		name string
+		mock HTTPMock
 	}{}
 
 	for _, tc := range tests {

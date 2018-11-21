@@ -6,9 +6,6 @@ import (
 )
 
 type (
-	// JSON is the type for json objects
-	JSON map[string]interface{}
-
 	// RESTExpect represents a RESTful expectation
 	RESTExpect struct {
 		BasePath string            `json:"basePath" yaml:"base_path"`
@@ -34,7 +31,7 @@ type (
 
 	// RESTMock represents a RESTful mock
 	RESTMock struct {
-		RESTExpect
+		RESTExpect   `json:",inline" yaml:",inline"`
 		RESTResponse `json:"response" yaml:"response"`
 		RESTStore    `json:"store" yaml:"store"`
 	}
@@ -50,13 +47,6 @@ func (e RESTExpect) WithDefaults() RESTExpect {
 	}
 
 	return e
-}
-
-// Hash calculates a hash for a rest expectation
-func (e RESTExpect) Hash() uint64 {
-	hash := fnv.New64a()
-
-	return hash.Sum64()
 }
 
 // WithDefaults returns a rest response with default values
@@ -92,13 +82,6 @@ func (r RESTResponse) WithDefaults() RESTResponse {
 	return r
 }
 
-// Hash calculates a hash for a rest response
-func (r RESTResponse) Hash() uint64 {
-	hash := fnv.New64a()
-
-	return hash.Sum64()
-}
-
 // WithDefaults returns a rest store with default values
 func (s RESTStore) WithDefaults() RESTStore {
 	if s.Identifier == "" {
@@ -112,13 +95,6 @@ func (s RESTStore) WithDefaults() RESTStore {
 	return s
 }
 
-// Hash calculates a hash for a rest store
-func (s RESTStore) Hash() uint64 {
-	hash := fnv.New64a()
-
-	return hash.Sum64()
-}
-
 // WithDefaults returns a rest mock with default values
 func (m RESTMock) WithDefaults() RESTMock {
 	m.RESTExpect = m.RESTExpect.WithDefaults()
@@ -128,11 +104,9 @@ func (m RESTMock) WithDefaults() RESTMock {
 	return m
 }
 
-// Hash calculates a hash for a rest mock
+// Hash calculates a hash for a rest mock based on the rest expectation base path
 func (m RESTMock) Hash() uint64 {
-	hash := m.RESTExpect.Hash()
-	hash += m.RESTResponse.Hash()
-	hash += m.RESTStore.Hash()
-
-	return hash
+	hash := fnv.New64a()
+	hash.Write([]byte(m.RESTExpect.BasePath))
+	return hash.Sum64()
 }

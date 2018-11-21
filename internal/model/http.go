@@ -10,6 +10,7 @@ type (
 	HTTPExpect struct {
 		Methods []string          `json:"methods" yaml:"methods"`
 		Path    string            `json:"path" yaml:"path"`
+		Prefix  bool              `json:"prefix" yaml:"prefix"`
 		Queries map[string]string `json:"queries" yaml:"queries"`
 		Headers map[string]string `json:"headers" yaml:"headers"`
 	}
@@ -31,7 +32,7 @@ type (
 
 	// HTTPMock represents an http mock
 	HTTPMock struct {
-		HTTPExpect
+		HTTPExpect    `json:",inline" yaml:",inline"`
 		*HTTPResponse `json:"response" yaml:"response"`
 		*HTTPForward  `json:"forward" yaml:"forward"`
 	}
@@ -40,11 +41,12 @@ type (
 // WithDefaults returns an http expectation with default values
 func (e HTTPExpect) WithDefaults() HTTPExpect {
 	if e.Methods == nil || len(e.Methods) == 0 {
-		e.Methods = []string{"GET", "POST", "PUT", "PATCH", "DELETE"}
+		e.Methods = []string{"GET"}
 	}
 
-	e.Path = "/" + e.Path
-	e.Path = path.Clean(e.Path)
+	e.Path = path.Clean("/" + e.Path)
+
+	// Prefix is a boolean defaulting to false
 
 	if e.Queries == nil {
 		e.Queries = map[string]string{}
@@ -55,13 +57,6 @@ func (e HTTPExpect) WithDefaults() HTTPExpect {
 	}
 
 	return e
-}
-
-// Hash calculates a hash for an http expectation
-func (e HTTPExpect) Hash() uint64 {
-	hash := fnv.New64a()
-
-	return hash.Sum64()
 }
 
 // WithDefaults returns an http response with default values
@@ -78,14 +73,9 @@ func (r HTTPResponse) WithDefaults() HTTPResponse {
 		r.Headers = map[string]string{}
 	}
 
+	// Body
+
 	return r
-}
-
-// Hash calculates a hash for an http response
-func (r HTTPResponse) Hash() uint64 {
-	hash := fnv.New64a()
-
-	return hash.Sum64()
 }
 
 // WithDefaults returns an http forward with default values
@@ -94,18 +84,13 @@ func (f HTTPForward) WithDefaults() HTTPForward {
 		f.Delay = "0"
 	}
 
+	// To
+
 	if f.Headers == nil {
 		f.Headers = map[string]string{}
 	}
 
 	return f
-}
-
-// Hash calculates a hash for an http forward
-func (f HTTPForward) Hash() uint64 {
-	hash := fnv.New64a()
-
-	return hash.Sum64()
 }
 
 // WithDefaults returns an http mock with default values
@@ -125,17 +110,41 @@ func (m HTTPMock) WithDefaults() HTTPMock {
 	return m
 }
 
-// Hash calculates a hash for an http mock
+// Hash calculates a hash for an http mock based on the http expectation values
 func (m HTTPMock) Hash() uint64 {
-	hash := m.HTTPExpect.Hash()
+	hash := fnv.New64a()
 
-	if m.HTTPResponse != nil {
-		hash += m.HTTPResponse.Hash()
+	for _, m := range m.HTTPExpect.Methods {
+		hash.Write([]byte(m))
 	}
 
-	if m.HTTPForward != nil {
-		hash += m.HTTPForward.Hash()
+	hash.Write([]byte(m.HTTPExpect.Path))
+
+	queries := []Pair{}
+	for name, value := range m.HTTPExpect.Queries {
+		queries = append(queries, Pair{
+			Name:  name,
+			Value: value,
+		})
 	}
 
-	return hash
+	for _, q := range queries {
+		hash.Write([]byte(q.Name))
+		hash.Write([]byte(q.Value))
+	}
+
+	headers := []Pair{}
+	for name, value := range m.HTTPExpect.Headers {
+		headers = append(headers, Pair{
+			Name:  name,
+			Value: value,
+		})
+	}
+
+	for _, h := range headers {
+		hash.Write([]byte(h.Name))
+		hash.Write([]byte(h.Value))
+	}
+
+	return hash.Sum64()
 }
