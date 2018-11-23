@@ -244,7 +244,7 @@ var (
 					},
 				},
 				HTTPResponse{
-					Delay:      "100ms",
+					Delay:      "10ms",
 					StatusCode: 200,
 					Headers: map[string]string{
 						"Content-Type": "application/json",
@@ -280,7 +280,7 @@ var (
 					Headers:    map[string]string{},
 				},
 				HTTPForward{
-					Delay: "100ms",
+					Delay: "10ms",
 					To:    "http://session-manager:8800/api/v1/sessions",
 					Headers: map[string]string{
 						"Referer": "flax",
@@ -318,7 +318,7 @@ var (
 					},
 				},
 				RESTResponse{
-					Delay:            "100ms",
+					Delay:            "10ms",
 					PostStatusCode:   202,
 					PutStatusCode:    201,
 					PatchStatusCode:  201,
@@ -358,7 +358,7 @@ var (
 					},
 				},
 				HTTPResponse{
-					Delay:      "100ms",
+					Delay:      "10ms",
 					StatusCode: 200,
 					Headers: map[string]string{
 						"Content-Type": "application/json",
@@ -394,7 +394,7 @@ var (
 					Headers:    map[string]string{},
 				},
 				HTTPForward{
-					Delay: "100ms",
+					Delay: "10ms",
 					To:    "http://session-manager:8800/api/v1/sessions",
 					Headers: map[string]string{
 						"Referer": "flax",
@@ -432,7 +432,7 @@ var (
 					},
 				},
 				RESTResponse{
-					Delay:            "100ms",
+					Delay:            "10ms",
 					PostStatusCode:   202,
 					PutStatusCode:    201,
 					PatchStatusCode:  201,
