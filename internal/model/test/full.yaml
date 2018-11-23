@@ -10,7 +10,7 @@ http:
     headers:
       Authorization: "Bearer .*"
     response:
-      delay: 100ms
+      delay: 10ms
       status: 200
       headers:
         Content-Type: "application/json"
@@ -28,7 +28,7 @@ http:
       Accept: "application/json"
       Content-Type: "application/json"
     forward:
-      delay: 100ms
+      delay: 10ms
       to: http://session-manager:8800/api/v1/sessions
       headers:
         Referer: flax
@@ -44,7 +44,7 @@ rest:
     headers:
       Authorization: "Bearer .*"
     response:
-      delay: 100ms
+      delay: 10ms
       post_status: 202
       put_status: 201
       patch_status: 201

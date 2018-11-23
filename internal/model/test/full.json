@@ -15,7 +15,7 @@
         "Authorization": "Bearer .*"
       },
       "response": {
-        "delay": "100ms",
+        "delay": "10ms",
         "status": 200,
         "headers": {
           "Content-Type": "application/json"
@@ -39,7 +39,7 @@
         "Content-Type": "application/json"
       },
       "forward": {
-        "delay": "100ms",
+        "delay": "10ms",
         "to": "http://session-manager:8800/api/v1/sessions",
         "headers": {
           "Referer": "flax"
@@ -64,7 +64,7 @@
         "Authorization": "Bearer .*"
       },
       "response": {
-        "delay": "100ms",
+        "delay": "10ms",
         "postStatus": 202,
         "putStatus": 201,
         "patchStatus": 201,
