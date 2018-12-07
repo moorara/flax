@@ -13,4 +13,4 @@ RUN apk add --no-cache ca-certificates
 COPY --from=builder /workspace/flax /usr/local/bin/
 RUN chown -R nobody:nogroup /usr/local/bin/flax
 USER nobody
-CMD flax
+ENTRYPOINT [ "flax" ]
