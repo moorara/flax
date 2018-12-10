@@ -12,7 +12,6 @@ require (
 	github.com/julienschmidt/httprouter v1.2.0 // indirect
 	github.com/kr/logfmt v0.0.0-20140226030751-b84e30acd515 // indirect
 	github.com/matttproud/golang_protobuf_extensions v1.0.1 // indirect
-	github.com/moorara/chia v0.1.0
 	github.com/moorara/goto v0.1.6
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/prometheus/client_golang v0.9.1

@@ -133,8 +133,8 @@ func TestMOCKHTTP(t *testing.T) {
 			method:   "GET",
 			endpoint: "/api/mock/verify",
 			body: JSON{
-				"method": "GET",
-				"path":   "/me",
+				"methods": []string{"GET"},
+				"path":    "/me",
 			},
 			expectedStatusCode: 200,
 			expectedResponse: JSON{
@@ -224,8 +224,8 @@ func TestMOCKREST(t *testing.T) {
 			method:   "GET",
 			endpoint: "/api/mock/verify",
 			body: JSON{
-				"method": "GET",
-				"path":   "/api/v1/teams",
+				"methods": []string{"GET"},
+				"path":    "/api/v1/teams",
 			},
 			expectedStatusCode: 200,
 			expectedResponse: JSON{
@@ -237,8 +237,8 @@ func TestMOCKREST(t *testing.T) {
 			method:   "GET",
 			endpoint: "/api/mock/verify",
 			body: JSON{
-				"method": "POST",
-				"path":   "/api/v1/teams",
+				"methods": []string{"POST"},
+				"path":    "/api/v1/teams",
 			},
 			expectedStatusCode: 200,
 			expectedResponse: JSON{
@@ -250,8 +250,8 @@ func TestMOCKREST(t *testing.T) {
 			method:   "GET",
 			endpoint: "/api/mock/verify",
 			body: JSON{
-				"method": "GET",
-				"path":   "/api/v1/teams/11111111-1111-1111-1111-111111111111",
+				"methods": []string{"GET"},
+				"path":    "/api/v1/teams/11111111-1111-1111-1111-111111111111",
 			},
 			expectedStatusCode: 200,
 			expectedResponse: JSON{
@@ -263,8 +263,8 @@ func TestMOCKREST(t *testing.T) {
 			method:   "GET",
 			endpoint: "/api/mock/verify",
 			body: JSON{
-				"method": "PUT",
-				"path":   "/api/v1/teams/11111111-1111-1111-1111-111111111111",
+				"methods": []string{"PUT"},
+				"path":    "/api/v1/teams/11111111-1111-1111-1111-111111111111",
 			},
 			expectedStatusCode: 200,
 			expectedResponse: JSON{
@@ -276,8 +276,8 @@ func TestMOCKREST(t *testing.T) {
 			method:   "GET",
 			endpoint: "/api/mock/verify",
 			body: JSON{
-				"method": "PATCH",
-				"path":   "/api/v1/teams/11111111-1111-1111-1111-111111111111",
+				"methods": []string{"PATCH"},
+				"path":    "/api/v1/teams/11111111-1111-1111-1111-111111111111",
 			},
 			expectedStatusCode: 200,
 			expectedResponse: JSON{
@@ -289,8 +289,8 @@ func TestMOCKREST(t *testing.T) {
 			method:   "GET",
 			endpoint: "/api/mock/verify",
 			body: JSON{
-				"method": "DELETE",
-				"path":   "/api/v1/teams/11111111-1111-1111-1111-111111111111",
+				"methods": []string{"DELETE"},
+				"path":    "/api/v1/teams/11111111-1111-1111-1111-111111111111",
 			},
 			expectedStatusCode: 200,
 			expectedResponse: JSON{

@@ -28,8 +28,8 @@ func TestNewLogger(t *testing.T) {
 		loggerName string
 		logLevel   string
 	}{
-		{"LevelDebug", "chia", "debug"},
-		{"LevelInfo", "chia", "info"},
+		{"LevelDebug", "flax", "debug"},
+		{"LevelInfo", "flax", "info"},
 		{"LevelWarn", "test-service", "warn"},
 		{"LevelError", "test-service", "error"},
 	}

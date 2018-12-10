@@ -9,17 +9,14 @@ docker_image ?= moorara/$(name)
 clean:
 	@ rm -rf *.log $(name) $(build_path) $(coverage_path)
 
-dep:
-	@ dep ensure -update
-
 run:
-	@ go run cmd/main.go
+	@ go run main.go
 
 build:
-	@ ./scripts/build.sh --main ./cmd/main.go --binary ./$(name)
+	@ ./scripts/build.sh --main main.go --binary $(name)
 
 build-all:
-	@ ./scripts/build.sh --all --main ./cmd/main.go --binary $(build_path)/$(name)
+	@ ./scripts/build.sh --all --main main.go --binary $(build_path)/$(name)
 
 test:
 	@ go test -v -race ./...
@@ -38,6 +35,6 @@ push:
 
 
 .PHONY: clean
-.PHONY: dep run build build-all
+.PHONY: run build build-all
 .PHONY: test test-short coverage
 .PHONY: docker push

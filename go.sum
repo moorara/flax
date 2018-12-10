@@ -20,8 +20,6 @@ github.com/kr/logfmt v0.0.0-20140226030751-b84e30acd515 h1:T+h1c/A9Gawja4Y9mFVWj
 github.com/kr/logfmt v0.0.0-20140226030751-b84e30acd515/go.mod h1:+0opPa2QZZtGFBFZlji/RkVcI2GknAs/DXo4wKdlNEc=
 github.com/matttproud/golang_protobuf_extensions v1.0.1 h1:4hp9jkHxhMHkqkrB3Ix0jegS5sx/RkqARlsWZ6pIwiU=
 github.com/matttproud/golang_protobuf_extensions v1.0.1/go.mod h1:D8He9yQNgCq6Z5Ld7szi9bcBfOoFv/3dc6xSMkL2PC0=
-github.com/moorara/chia v0.1.0 h1:eMyCsXUGPT10iO/RPFxnOpmDEPK+kkCo2b03gF7KX7g=
-github.com/moorara/chia v0.1.0/go.mod h1:lRIFhQAULwfaZmL2jGXC0thGug7yvhRmxEcx5zgaWMI=
 github.com/moorara/goto v0.1.6 h1:HDmdilOBsYI/rtWh/8IQAzFS2jb5tMAHMOy5NzwEBVw=
 github.com/moorara/goto v0.1.6/go.mod h1:aWUR+yKRip4QuuLxItiHo+M9uYlE6tLgKtQBv0WvE5E=
 github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZbAQM=
