@@ -1,9 +1,9 @@
 package main
 
 import (
-	"github.com/moorara/chia/cmd/config"
-	"github.com/moorara/chia/cmd/version"
-	"github.com/moorara/chia/pkg/log"
+	"github.com/moorara/flax/cmd/config"
+	"github.com/moorara/flax/cmd/version"
+	"github.com/moorara/flax/pkg/log"
 )
 
 func main() {

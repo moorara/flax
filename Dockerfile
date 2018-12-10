@@ -3,7 +3,7 @@ FROM golang:1.11-alpine as builder
 RUN apk add --no-cache git
 WORKDIR /workspace
 COPY . .
-RUN ./scripts/build.sh --main cmd/main.go --binary flax
+RUN ./scripts/build.sh --main main.go --binary flax
 
 # FINAL STAGE
 FROM alpine:3.8

@@ -26,7 +26,6 @@ Supporting the following features:
 
 | Command                        | Description                                          |
 |--------------------------------|------------------------------------------------------|
-| `make dep`                     | Install and updates dependencies                     |
 | `make run`                     | Run the application locally                          |
 | `make build`                   | Build the binary locally                             |
 | `make build-all`               | Build the binary locally for all supported platforms |
