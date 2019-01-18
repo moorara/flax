@@ -19,6 +19,7 @@ type Metrics struct {
 
 // New creates a new metrics
 func New(namespace string) *Metrics {
+	namespace = strings.Replace(namespace, " ", "_", -1)
 	namespace = strings.Replace(namespace, "-", "_", -1)
 
 	registry := prometheus.NewRegistry()
