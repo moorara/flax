@@ -3,6 +3,10 @@ main
 flax
 flax-*
 
+# Build directories
+/bin
+/build
+
 # Test files
 *.log
 *.out
