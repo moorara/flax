@@ -1,4 +1,4 @@
-package model
+package v1
 
 import (
 	"testing"
@@ -10,33 +10,28 @@ var (
 	specSimpleYAML = &Spec{
 		HTTPMocks: []HTTPMock{
 			HTTPMock{
-				HTTPExpect{
+				HTTPExpect: HTTPExpect{
 					Methods: []string{"GET"},
 					Path:    "/health",
 					Prefix:  false,
 					Queries: map[string]string{},
 					Headers: map[string]string{},
 				},
-				HTTPResponse{
+				HTTPResponse: &HTTPResponse{
 					Delay:      "0",
 					StatusCode: 200,
 					Headers:    map[string]string{},
 				},
-				HTTPForward{
-					Delay:   "0",
-					To:      "",
-					Headers: map[string]string{},
-				},
 			},
 			HTTPMock{
-				HTTPExpect{
+				HTTPExpect: HTTPExpect{
 					Methods: []string{"GET"},
 					Path:    "/me",
 					Prefix:  false,
 					Queries: map[string]string{},
 					Headers: map[string]string{},
 				},
-				HTTPResponse{
+				HTTPResponse: &HTTPResponse{
 					Delay:      "0",
 					StatusCode: 200,
 					Headers:    map[string]string{},
@@ -46,26 +41,16 @@ var (
 						"email": "john.doe@example.com",
 					},
 				},
-				HTTPForward{
-					Delay:   "0",
-					To:      "",
-					Headers: map[string]string{},
-				},
 			},
 			HTTPMock{
-				HTTPExpect{
+				HTTPExpect: HTTPExpect{
 					Methods: []string{"GET"},
 					Path:    "/v1/sessions",
 					Prefix:  true,
 					Queries: map[string]string{},
 					Headers: map[string]string{},
 				},
-				HTTPResponse{
-					Delay:      "0",
-					StatusCode: 200,
-					Headers:    map[string]string{},
-				},
-				HTTPForward{
+				HTTPForward: &HTTPForward{
 					Delay:   "0",
 					To:      "http://session-manager:8800/api/v1/sessions",
 					Headers: map[string]string{},
@@ -80,6 +65,7 @@ var (
 				},
 				RESTResponse{
 					Delay:            "0",
+					GetStatusCode:    200,
 					PostStatusCode:   201,
 					PutStatusCode:    200,
 					PatchStatusCode:  200,
@@ -91,6 +77,10 @@ var (
 						{"id": "ad2bd67b-172e-4778-a8a3-7cfb626685b9", "make": "Mazda", "model": "CX-5"},
 						{"id": "26ee9c87-fdbb-48cf-be0a-add9a3d87189", "make": "Hyundai", "model": "Sonata"},
 					},
+					Directory: map[interface{}]JSON{
+						"ad2bd67b-172e-4778-a8a3-7cfb626685b9": {"id": "ad2bd67b-172e-4778-a8a3-7cfb626685b9", "make": "Mazda", "model": "CX-5"},
+						"26ee9c87-fdbb-48cf-be0a-add9a3d87189": {"id": "26ee9c87-fdbb-48cf-be0a-add9a3d87189", "make": "Hyundai", "model": "Sonata"},
+					},
 				},
 			},
 			RESTMock{
@@ -100,6 +90,7 @@ var (
 				},
 				RESTResponse{
 					Delay:            "0",
+					GetStatusCode:    200,
 					PostStatusCode:   201,
 					PutStatusCode:    200,
 					PatchStatusCode:  200,
@@ -110,6 +101,10 @@ var (
 					Objects: []JSON{
 						{"_id": "d93ce179-50f7-469e-bb36-1b3746145f00", "name": "Back-end", "tags": []interface{}{"cloud", "go"}},
 						{"_id": "8cd6ef6c-2095-4c75-bc66-6f38e785299d", "name": "Front-end", "tags": []interface{}{"react", "redux"}},
+					},
+					Directory: map[interface{}]JSON{
+						"d93ce179-50f7-469e-bb36-1b3746145f00": {"_id": "d93ce179-50f7-469e-bb36-1b3746145f00", "name": "Back-end", "tags": []interface{}{"cloud", "go"}},
+						"8cd6ef6c-2095-4c75-bc66-6f38e785299d": {"_id": "8cd6ef6c-2095-4c75-bc66-6f38e785299d", "name": "Front-end", "tags": []interface{}{"react", "redux"}},
 					},
 				},
 			},
@@ -119,33 +114,28 @@ var (
 	specSimpleJSON = &Spec{
 		HTTPMocks: []HTTPMock{
 			HTTPMock{
-				HTTPExpect{
+				HTTPExpect: HTTPExpect{
 					Methods: []string{"GET"},
 					Path:    "/health",
 					Prefix:  false,
 					Queries: map[string]string{},
 					Headers: map[string]string{},
 				},
-				HTTPResponse{
+				HTTPResponse: &HTTPResponse{
 					Delay:      "0",
 					StatusCode: 200,
 					Headers:    map[string]string{},
 				},
-				HTTPForward{
-					Delay:   "0",
-					To:      "",
-					Headers: map[string]string{},
-				},
 			},
 			HTTPMock{
-				HTTPExpect{
+				HTTPExpect: HTTPExpect{
 					Methods: []string{"GET"},
 					Path:    "/me",
 					Prefix:  false,
 					Queries: map[string]string{},
 					Headers: map[string]string{},
 				},
-				HTTPResponse{
+				HTTPResponse: &HTTPResponse{
 					Delay:      "0",
 					StatusCode: 200,
 					Headers:    map[string]string{},
@@ -155,26 +145,16 @@ var (
 						"email": "john.doe@example.com",
 					},
 				},
-				HTTPForward{
-					Delay:   "0",
-					To:      "",
-					Headers: map[string]string{},
-				},
 			},
 			HTTPMock{
-				HTTPExpect{
+				HTTPExpect: HTTPExpect{
 					Methods: []string{"GET"},
 					Path:    "/v1/sessions",
 					Prefix:  true,
 					Queries: map[string]string{},
 					Headers: map[string]string{},
 				},
-				HTTPResponse{
-					Delay:      "0",
-					StatusCode: 200,
-					Headers:    map[string]string{},
-				},
-				HTTPForward{
+				HTTPForward: &HTTPForward{
 					Delay:   "0",
 					To:      "http://session-manager:8800/api/v1/sessions",
 					Headers: map[string]string{},
@@ -189,6 +169,7 @@ var (
 				},
 				RESTResponse{
 					Delay:            "0",
+					GetStatusCode:    200,
 					PostStatusCode:   201,
 					PutStatusCode:    200,
 					PatchStatusCode:  200,
@@ -200,6 +181,10 @@ var (
 						{"id": "ad2bd67b-172e-4778-a8a3-7cfb626685b9", "make": "Mazda", "model": "CX-5"},
 						{"id": "26ee9c87-fdbb-48cf-be0a-add9a3d87189", "make": "Hyundai", "model": "Sonata"},
 					},
+					Directory: map[interface{}]JSON{
+						"ad2bd67b-172e-4778-a8a3-7cfb626685b9": {"id": "ad2bd67b-172e-4778-a8a3-7cfb626685b9", "make": "Mazda", "model": "CX-5"},
+						"26ee9c87-fdbb-48cf-be0a-add9a3d87189": {"id": "26ee9c87-fdbb-48cf-be0a-add9a3d87189", "make": "Hyundai", "model": "Sonata"},
+					},
 				},
 			},
 			RESTMock{
@@ -209,6 +194,7 @@ var (
 				},
 				RESTResponse{
 					Delay:            "0",
+					GetStatusCode:    200,
 					PostStatusCode:   201,
 					PutStatusCode:    200,
 					PatchStatusCode:  200,
@@ -219,6 +205,10 @@ var (
 					Objects: []JSON{
 						{"_id": "d93ce179-50f7-469e-bb36-1b3746145f00", "name": "Back-end", "tags": []interface{}{"cloud", "go"}},
 						{"_id": "8cd6ef6c-2095-4c75-bc66-6f38e785299d", "name": "Front-end", "tags": []interface{}{"react", "redux"}},
+					},
+					Directory: map[interface{}]JSON{
+						"d93ce179-50f7-469e-bb36-1b3746145f00": {"_id": "d93ce179-50f7-469e-bb36-1b3746145f00", "name": "Back-end", "tags": []interface{}{"cloud", "go"}},
+						"8cd6ef6c-2095-4c75-bc66-6f38e785299d": {"_id": "8cd6ef6c-2095-4c75-bc66-6f38e785299d", "name": "Front-end", "tags": []interface{}{"react", "redux"}},
 					},
 				},
 			},
@@ -232,7 +222,7 @@ var (
 		},
 		HTTPMocks: []HTTPMock{
 			HTTPMock{
-				HTTPExpect{
+				HTTPExpect: HTTPExpect{
 					Methods: []string{"GET"},
 					Path:    "/me",
 					Prefix:  false,
@@ -243,7 +233,7 @@ var (
 						"Authorization": "Bearer .*",
 					},
 				},
-				HTTPResponse{
+				HTTPResponse: &HTTPResponse{
 					Delay:      "10ms",
 					StatusCode: 200,
 					Headers: map[string]string{
@@ -255,14 +245,9 @@ var (
 						"email": "john.doe@example.com",
 					},
 				},
-				HTTPForward{
-					Delay:   "0",
-					To:      "",
-					Headers: map[string]string{},
-				},
 			},
 			HTTPMock{
-				HTTPExpect{
+				HTTPExpect: HTTPExpect{
 					Methods: []string{"POST", "PUT"},
 					Path:    "/v1/sessions",
 					Prefix:  true,
@@ -274,12 +259,7 @@ var (
 						"Content-Type": "application/json",
 					},
 				},
-				HTTPResponse{
-					Delay:      "0",
-					StatusCode: 200,
-					Headers:    map[string]string{},
-				},
-				HTTPForward{
+				HTTPForward: &HTTPForward{
 					Delay: "10ms",
 					To:    "http://session-manager:8800/api/v1/sessions",
 					Headers: map[string]string{
@@ -296,6 +276,7 @@ var (
 				},
 				RESTResponse{
 					Delay:            "0",
+					GetStatusCode:    200,
 					PostStatusCode:   201,
 					PutStatusCode:    200,
 					PatchStatusCode:  200,
@@ -308,6 +289,10 @@ var (
 						{"id": "ad2bd67b-172e-4778-a8a3-7cfb626685b9", "make": "Mazda", "model": "CX-5"},
 						{"id": "26ee9c87-fdbb-48cf-be0a-add9a3d87189", "make": "Hyundai", "model": "Sonata"},
 					},
+					Directory: map[interface{}]JSON{
+						"ad2bd67b-172e-4778-a8a3-7cfb626685b9": {"id": "ad2bd67b-172e-4778-a8a3-7cfb626685b9", "make": "Mazda", "model": "CX-5"},
+						"26ee9c87-fdbb-48cf-be0a-add9a3d87189": {"id": "26ee9c87-fdbb-48cf-be0a-add9a3d87189", "make": "Hyundai", "model": "Sonata"},
+					},
 				},
 			},
 			RESTMock{
@@ -319,9 +304,10 @@ var (
 				},
 				RESTResponse{
 					Delay:            "10ms",
+					GetStatusCode:    206,
 					PostStatusCode:   202,
-					PutStatusCode:    201,
-					PatchStatusCode:  201,
+					PutStatusCode:    202,
+					PatchStatusCode:  202,
 					DeleteStatusCode: 202,
 					ListProperty:     "data",
 					Headers: map[string]string{
@@ -333,6 +319,10 @@ var (
 					Objects: []JSON{
 						{"_id": "d93ce179-50f7-469e-bb36-1b3746145f00", "name": "Back-end", "tags": []interface{}{"cloud", "go"}},
 						{"_id": "8cd6ef6c-2095-4c75-bc66-6f38e785299d", "name": "Front-end", "tags": []interface{}{"react", "redux"}},
+					},
+					Directory: map[interface{}]JSON{
+						"d93ce179-50f7-469e-bb36-1b3746145f00": {"_id": "d93ce179-50f7-469e-bb36-1b3746145f00", "name": "Back-end", "tags": []interface{}{"cloud", "go"}},
+						"8cd6ef6c-2095-4c75-bc66-6f38e785299d": {"_id": "8cd6ef6c-2095-4c75-bc66-6f38e785299d", "name": "Front-end", "tags": []interface{}{"react", "redux"}},
 					},
 				},
 			},
@@ -346,7 +336,7 @@ var (
 		},
 		HTTPMocks: []HTTPMock{
 			HTTPMock{
-				HTTPExpect{
+				HTTPExpect: HTTPExpect{
 					Methods: []string{"GET"},
 					Path:    "/me",
 					Prefix:  false,
@@ -357,7 +347,7 @@ var (
 						"Authorization": "Bearer .*",
 					},
 				},
-				HTTPResponse{
+				HTTPResponse: &HTTPResponse{
 					Delay:      "10ms",
 					StatusCode: 200,
 					Headers: map[string]string{
@@ -369,14 +359,9 @@ var (
 						"email": "john.doe@example.com",
 					},
 				},
-				HTTPForward{
-					Delay:   "0",
-					To:      "",
-					Headers: map[string]string{},
-				},
 			},
 			HTTPMock{
-				HTTPExpect{
+				HTTPExpect: HTTPExpect{
 					Methods: []string{"POST", "PUT"},
 					Path:    "/v1/sessions",
 					Prefix:  true,
@@ -388,12 +373,7 @@ var (
 						"Content-Type": "application/json",
 					},
 				},
-				HTTPResponse{
-					Delay:      "0",
-					StatusCode: 200,
-					Headers:    map[string]string{},
-				},
-				HTTPForward{
+				HTTPForward: &HTTPForward{
 					Delay: "10ms",
 					To:    "http://session-manager:8800/api/v1/sessions",
 					Headers: map[string]string{
@@ -410,6 +390,7 @@ var (
 				},
 				RESTResponse{
 					Delay:            "0",
+					GetStatusCode:    200,
 					PostStatusCode:   201,
 					PutStatusCode:    200,
 					PatchStatusCode:  200,
@@ -422,6 +403,10 @@ var (
 						{"id": "ad2bd67b-172e-4778-a8a3-7cfb626685b9", "make": "Mazda", "model": "CX-5"},
 						{"id": "26ee9c87-fdbb-48cf-be0a-add9a3d87189", "make": "Hyundai", "model": "Sonata"},
 					},
+					Directory: map[interface{}]JSON{
+						"ad2bd67b-172e-4778-a8a3-7cfb626685b9": {"id": "ad2bd67b-172e-4778-a8a3-7cfb626685b9", "make": "Mazda", "model": "CX-5"},
+						"26ee9c87-fdbb-48cf-be0a-add9a3d87189": {"id": "26ee9c87-fdbb-48cf-be0a-add9a3d87189", "make": "Hyundai", "model": "Sonata"},
+					},
 				},
 			},
 			RESTMock{
@@ -433,9 +418,10 @@ var (
 				},
 				RESTResponse{
 					Delay:            "10ms",
+					GetStatusCode:    206,
 					PostStatusCode:   202,
-					PutStatusCode:    201,
-					PatchStatusCode:  201,
+					PutStatusCode:    202,
+					PatchStatusCode:  202,
 					DeleteStatusCode: 202,
 					ListProperty:     "data",
 					Headers: map[string]string{
@@ -447,6 +433,10 @@ var (
 					Objects: []JSON{
 						{"_id": "d93ce179-50f7-469e-bb36-1b3746145f00", "name": "Back-end", "tags": []interface{}{"cloud", "go"}},
 						{"_id": "8cd6ef6c-2095-4c75-bc66-6f38e785299d", "name": "Front-end", "tags": []interface{}{"react", "redux"}},
+					},
+					Directory: map[interface{}]JSON{
+						"d93ce179-50f7-469e-bb36-1b3746145f00": {"_id": "d93ce179-50f7-469e-bb36-1b3746145f00", "name": "Back-end", "tags": []interface{}{"cloud", "go"}},
+						"8cd6ef6c-2095-4c75-bc66-6f38e785299d": {"_id": "8cd6ef6c-2095-4c75-bc66-6f38e785299d", "name": "Front-end", "tags": []interface{}{"react", "redux"}},
 					},
 				},
 			},
@@ -469,7 +459,7 @@ func TestReadSpec(t *testing.T) {
 		},
 		{
 			name:          "UnknownFormat",
-			path:          "./test/unknown.toml",
+			path:          "./test/unknown",
 			expectedError: "unknown file format",
 			expectedSpec:  nil,
 		},

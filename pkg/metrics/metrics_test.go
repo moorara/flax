@@ -10,8 +10,9 @@ func TestNew(t *testing.T) {
 	tests := []struct {
 		service string
 	}{
-		{"service_name"},
-		{"service-name"},
+		{"application name"},
+		{"application-name"},
+		{"application_name"},
 	}
 
 	for _, tc := range tests {

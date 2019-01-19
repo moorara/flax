@@ -65,9 +65,10 @@
       },
       "response": {
         "delay": "10ms",
+        "getStatus": 206,
         "postStatus": 202,
-        "putStatus": 201,
-        "patchStatus": 201,
+        "putStatus": 202,
+        "patchStatus": 202,
         "deleteStatus": 202,
         "listProperty": "data",
         "headers": {

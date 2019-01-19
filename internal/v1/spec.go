@@ -1,4 +1,4 @@
-package model
+package v1
 
 import (
 	"encoding/json"
@@ -36,12 +36,12 @@ func ReadSpec(path string) (*Spec, error) {
 	defer f.Close()
 
 	ext := strings.ToLower(filepath.Ext(path))
-
-	if ext == ".json" {
+	switch ext {
+	case ".json":
 		err = json.NewDecoder(f).Decode(spec)
-	} else if ext == ".yaml" || ext == ".yml" {
+	case ".yml", ".yaml":
 		err = yaml.NewDecoder(f).Decode(spec)
-	} else {
+	default:
 		err = fmt.Errorf("unknown file format %s", ext)
 	}
 
@@ -50,11 +50,11 @@ func ReadSpec(path string) (*Spec, error) {
 	}
 
 	for i := range spec.HTTPMocks {
-		spec.HTTPMocks[i] = spec.HTTPMocks[i].WithDefaults()
+		spec.HTTPMocks[i].SetDefaults()
 	}
 
 	for i := range spec.RESTMocks {
-		spec.RESTMocks[i] = spec.RESTMocks[i].WithDefaults()
+		spec.RESTMocks[i].SetDefaults()
 	}
 
 	return spec, nil
