@@ -45,9 +45,10 @@ rest:
       Authorization: "Bearer .*"
     response:
       delay: 10ms
+      get_status: 206
       post_status: 202
-      put_status: 201
-      patch_status: 201
+      put_status: 202
+      patch_status: 202
       delete_status: 202
       list_property: data
       headers:

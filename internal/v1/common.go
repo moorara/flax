@@ -1,19 +1,17 @@
-package model
+package v1
 
 import (
 	"github.com/gorilla/mux"
-	"github.com/moorara/flax/pkg/log"
-	"github.com/moorara/flax/pkg/metrics"
 )
 
 type (
 	// JSON is the type for json objects
 	JSON map[string]interface{}
 
-	// Mock is the interface for a mock
+	// Mock is the interface for a mock object
 	Mock interface {
 		Hash() uint64
-		RegisterRoute(*mux.Router, *log.Logger, *metrics.Metrics)
+		RegisterRoutes(*mux.Router)
 	}
 
 	// Pair is a name-value pair

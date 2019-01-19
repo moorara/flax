@@ -1,11 +1,10 @@
-package service
+package v1
 
 import (
 	"encoding/json"
 	"net/http"
 
 	"github.com/gorilla/mux"
-	"github.com/moorara/flax/internal/model"
 	"github.com/moorara/flax/pkg/log"
 	"github.com/moorara/flax/pkg/metrics"
 )
@@ -22,31 +21,31 @@ type (
 	controlService struct {
 		logger  *log.Logger
 		metrics *metrics.Metrics
-		mocks   map[uint64]model.Mock
+		mocks   map[uint64]Mock
 	}
 )
 
 // NewControlService creates a new instance of ControlService
-func NewControlService(port string, logger *log.Logger, metrics *metrics.Metrics) ControlService {
+func NewControlService(logger *log.Logger, metrics *metrics.Metrics) ControlService {
 	return &controlService{
 		logger:  logger,
 		metrics: metrics,
-		mocks:   map[uint64]model.Mock{},
+		mocks:   map[uint64]Mock{},
 	}
 }
 
-func (s *controlService) getRouter() *mux.Router {
+func (s *controlService) CreateRouter() *mux.Router {
 	router := mux.NewRouter()
 	for _, m := range s.mocks {
-		m.RegisterRoute(router, s.logger, s.metrics)
+		m.RegisterRoutes(router)
 	}
 
 	return router
 }
 
 func (s *controlService) AddHTTPMocks(w http.ResponseWriter, r *http.Request) {
-	httpMocks := []model.HTTPMock{}
-	if err := json.NewDecoder(r.Body).Decode(httpMocks); err != nil {
+	httpMocks := []*HTTPMock{}
+	if err := json.NewDecoder(r.Body).Decode(&httpMocks); err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
@@ -59,8 +58,8 @@ func (s *controlService) AddHTTPMocks(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *controlService) AddRESTMocks(w http.ResponseWriter, r *http.Request) {
-	restMocks := []model.RESTMock{}
-	if err := json.NewDecoder(r.Body).Decode(restMocks); err != nil {
+	restMocks := []*RESTMock{}
+	if err := json.NewDecoder(r.Body).Decode(&restMocks); err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
@@ -73,8 +72,8 @@ func (s *controlService) AddRESTMocks(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *controlService) RemoveHTTPMocks(w http.ResponseWriter, r *http.Request) {
-	httpMocks := []model.HTTPMock{}
-	if err := json.NewDecoder(r.Body).Decode(httpMocks); err != nil {
+	httpMocks := []*HTTPMock{}
+	if err := json.NewDecoder(r.Body).Decode(&httpMocks); err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
@@ -87,8 +86,8 @@ func (s *controlService) RemoveHTTPMocks(w http.ResponseWriter, r *http.Request)
 }
 
 func (s *controlService) RemoveRESTMocks(w http.ResponseWriter, r *http.Request) {
-	restMocks := []model.RESTMock{}
-	if err := json.NewDecoder(r.Body).Decode(restMocks); err != nil {
+	restMocks := []*RESTMock{}
+	if err := json.NewDecoder(r.Body).Decode(&restMocks); err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}

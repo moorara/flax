@@ -1,14 +1,14 @@
-package model
+package v1
 
 import (
 	"hash/fnv"
+	"log"
 	"net/http"
 	"path"
 	"path/filepath"
+	"time"
 
 	"github.com/gorilla/mux"
-	"github.com/moorara/flax/pkg/log"
-	"github.com/moorara/flax/pkg/metrics"
 )
 
 const (
@@ -25,6 +25,7 @@ type (
 	// RESTResponse represents a mock RESTful response
 	RESTResponse struct {
 		Delay            string            `json:"delay" yaml:"delay"`
+		GetStatusCode    int               `json:"getStatus" yaml:"get_status"`
 		PostStatusCode   int               `json:"postStatus" yaml:"post_status"`
 		PutStatusCode    int               `json:"putStatus" yaml:"put_status"`
 		PatchStatusCode  int               `json:"patchStatus" yaml:"patch_status"`
@@ -35,8 +36,9 @@ type (
 
 	// RESTStore represents a collection of RESTful resources
 	RESTStore struct {
-		Identifier string `json:"identifier" yaml:"identifier"`
-		Objects    []JSON `json:"objects" yaml:"objects"`
+		Identifier string               `json:"identifier" yaml:"identifier"`
+		Objects    []JSON               `json:"objects" yaml:"objects"`
+		Directory  map[interface{}]JSON `json:"-" yaml:"-"`
 	}
 
 	// RESTMock represents a RESTful mock
@@ -47,29 +49,33 @@ type (
 	}
 )
 
-// WithDefaults returns a rest expectation with default values
-func (e RESTExpect) WithDefaults() RESTExpect {
-	e.BasePath = "/" + e.BasePath
-	e.BasePath = path.Clean(e.BasePath)
+// SetDefaults set default values for empty fields
+func (e *RESTExpect) SetDefaults() {
+	e.BasePath = path.Clean("/" + e.BasePath)
 
 	if e.Headers == nil {
 		e.Headers = map[string]string{}
 	}
-
-	return e
 }
 
-// Hash calculates a hash for a rest expectation based on the base path
-func (e RESTExpect) Hash() uint64 {
-	hash := fnv.New64a()
-	hash.Write([]byte(e.BasePath))
-	return hash.Sum64()
+// Hash calculates a hash for a rest expectation
+func (e *RESTExpect) Hash() uint64 {
+	h := fnv.New64a()
+
+	hashString(h, e.BasePath)
+	hashMap(h, true, e.Headers)
+
+	return h.Sum64()
 }
 
-// WithDefaults returns a rest response with default values
-func (r RESTResponse) WithDefaults() RESTResponse {
+// SetDefaults set default values for empty fields
+func (r *RESTResponse) SetDefaults() {
 	if r.Delay == "" {
 		r.Delay = "0"
+	}
+
+	if r.GetStatusCode < 100 || r.GetStatusCode > 599 {
+		r.GetStatusCode = 200
 	}
 
 	if r.PostStatusCode < 100 || r.PostStatusCode > 599 {
@@ -89,45 +95,49 @@ func (r RESTResponse) WithDefaults() RESTResponse {
 	}
 
 	if r.ListProperty == "" {
-		r.ListProperty = "" // returns a list of objects as an array
+		r.ListProperty = ""
 	}
 
 	if r.Headers == nil {
 		r.Headers = map[string]string{}
 	}
-
-	return r
 }
 
-// WithDefaults returns a rest store with default values
-func (s RESTStore) WithDefaults() RESTStore {
+// SetDefaults set default values for empty fields
+func (s *RESTStore) SetDefaults() {
 	if s.Identifier == "" {
-		s.Identifier = "" // will try from a standard list of identifiers
+		s.Identifier = ""
 	}
 
 	if s.Objects == nil {
 		s.Objects = []JSON{}
 	}
 
-	return s
+	s.Directory = map[interface{}]JSON{}
+	for _, obj := range s.Objects {
+		val, err := findID(s.Identifier, obj)
+		if err == nil {
+			s.Directory[val] = obj
+		}
+	}
 }
 
-// WithDefaults returns a rest mock with default values
-func (m RESTMock) WithDefaults() RESTMock {
-	m.RESTExpect = m.RESTExpect.WithDefaults()
-	m.RESTResponse = m.RESTResponse.WithDefaults()
-	m.RESTStore = m.RESTStore.WithDefaults()
-
-	return m
+// SetDefaults set default values for empty fields
+func (m *RESTMock) SetDefaults() {
+	m.RESTExpect.SetDefaults()
+	m.RESTResponse.SetDefaults()
+	m.RESTStore.SetDefaults()
 }
 
-// Hash calculates a hash for a rest mock based on the rest expectation base path
-func (m RESTMock) Hash() uint64 {
+// Hash calculates a hash for a rest mock based on the rest expectation
+func (m *RESTMock) Hash() uint64 {
 	return m.RESTExpect.Hash()
 }
 
-// RegisterRoute adds a new router to a Mux router for a rest mock
-func (m RESTMock) RegisterRoute(router *mux.Router, logger *log.Logger, metrics *metrics.Metrics) {
+// RegisterRoutes configure routes for a rest mock
+func (m *RESTMock) RegisterRoutes(router *mux.Router) {
+	d, _ := time.ParseDuration(m.Delay)
+
 	// GET /
 	{
 		path := m.RESTExpect.BasePath
@@ -136,8 +146,12 @@ func (m RESTMock) RegisterRoute(router *mux.Router, logger *log.Logger, metrics 
 			route.HeadersRegexp(header, pattern)
 		}
 
+		// TODO:
 		route.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-
+			if m.RESTStore.Directory != nil {
+				log.Printf("Getting all ...\n")
+				time.Sleep(d)
+			}
 		})
 	}
 
@@ -149,8 +163,12 @@ func (m RESTMock) RegisterRoute(router *mux.Router, logger *log.Logger, metrics 
 			route.HeadersRegexp(header, pattern)
 		}
 
+		// TODO:
 		route.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-
+			if m.RESTStore.Directory != nil {
+				log.Printf("Creating new ...\n")
+				time.Sleep(d)
+			}
 		})
 	}
 
@@ -162,8 +180,15 @@ func (m RESTMock) RegisterRoute(router *mux.Router, logger *log.Logger, metrics 
 			route.HeadersRegexp(header, pattern)
 		}
 
+		// TODO:
 		route.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			vars := mux.Vars(r)
+			id := vars["id"]
 
+			if m.RESTStore.Directory != nil {
+				log.Printf("Getting %s ...\n", id)
+				time.Sleep(d)
+			}
 		})
 	}
 
@@ -175,8 +200,15 @@ func (m RESTMock) RegisterRoute(router *mux.Router, logger *log.Logger, metrics 
 			route.HeadersRegexp(header, pattern)
 		}
 
+		// TODO:
 		route.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			vars := mux.Vars(r)
+			id := vars["id"]
 
+			if m.RESTStore.Directory != nil {
+				log.Printf("Deleting %s ...\n", id)
+				time.Sleep(d)
+			}
 		})
 	}
 
@@ -188,8 +220,15 @@ func (m RESTMock) RegisterRoute(router *mux.Router, logger *log.Logger, metrics 
 			route.HeadersRegexp(header, pattern)
 		}
 
+		// TODO:
 		route.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			vars := mux.Vars(r)
+			id := vars["id"]
 
+			if m.RESTStore.Directory != nil {
+				log.Printf("Patching %s ...\n", id)
+				time.Sleep(d)
+			}
 		})
 	}
 
@@ -201,8 +240,15 @@ func (m RESTMock) RegisterRoute(router *mux.Router, logger *log.Logger, metrics 
 			route.HeadersRegexp(header, pattern)
 		}
 
+		// TODO:
 		route.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			vars := mux.Vars(r)
+			id := vars["id"]
 
+			if m.RESTStore.Directory != nil {
+				log.Printf("Deleting %s ...\n", id)
+				time.Sleep(d)
+			}
 		})
 	}
 }
