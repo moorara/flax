@@ -3,8 +3,8 @@ package v1
 import (
 	"testing"
 
-	"github.com/moorara/flax/pkg/log"
 	"github.com/moorara/flax/pkg/metrics"
+	"github.com/moorara/goto/log"
 	"github.com/stretchr/testify/assert"
 )
 

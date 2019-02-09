@@ -7,8 +7,8 @@ import (
 	"time"
 
 	xhttp "github.com/moorara/flax/pkg/http"
-	"github.com/moorara/flax/pkg/log"
 	"github.com/moorara/flax/pkg/metrics"
+	"github.com/moorara/goto/log"
 )
 
 type (

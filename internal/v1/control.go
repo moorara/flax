@@ -5,8 +5,8 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
-	"github.com/moorara/flax/pkg/log"
 	"github.com/moorara/flax/pkg/metrics"
+	"github.com/moorara/goto/log"
 )
 
 type (

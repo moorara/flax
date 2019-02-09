@@ -9,7 +9,7 @@ import (
 	"syscall"
 
 	"github.com/gorilla/mux"
-	"github.com/moorara/flax/pkg/log"
+	"github.com/moorara/goto/log"
 )
 
 // HTTPMockServer is an http server for mocked http endpoints
