@@ -8,8 +8,8 @@ import (
 	"testing"
 
 	kitLog "github.com/go-kit/kit/log"
-	"github.com/moorara/flax/pkg/log"
 	"github.com/moorara/flax/pkg/metrics"
+	"github.com/moorara/goto/log"
 	"github.com/stretchr/testify/assert"
 )
 
