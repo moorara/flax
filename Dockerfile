@@ -8,7 +8,7 @@ RUN wget -qO- https://raw.githubusercontent.com/moorara/cherry/master/scripts/in
 RUN cherry build -cross-compile=false -binary-file=flax
 
 # FINAL STAGE
-FROM alpine:3.8
+FROM alpine:3.9
 EXPOSE 8080 9999
 HEALTHCHECK --interval=5s --timeout=3s --retries=3 CMD wget -qO- http://localhost:8080/liveness || exit 1
 RUN apk add --no-cache ca-certificates
