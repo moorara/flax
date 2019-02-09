@@ -8,8 +8,8 @@ import (
 
 func main() {
 	// Create logger
-	logger := log.NewJSONLogger(config.Config.Name, config.Config.LogLevel)
-	logger = logger.SyncLogger()
+	opts := log.Options{Name: config.Config.Name, Level: config.Config.LogLevel}
+	logger := log.NewJSONLogger(opts)
 	logger = logger.With(
 		config.Config.Name, map[string]string{
 			"version":   version.Version,
