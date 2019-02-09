@@ -3,7 +3,7 @@ package main
 import (
 	"github.com/moorara/flax/cmd/config"
 	"github.com/moorara/flax/cmd/version"
-	"github.com/moorara/flax/pkg/log"
+	"github.com/moorara/goto/log"
 )
 
 func main() {

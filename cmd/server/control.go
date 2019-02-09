@@ -10,7 +10,7 @@ import (
 	"time"
 
 	"github.com/gorilla/mux"
-	"github.com/moorara/flax/pkg/log"
+	"github.com/moorara/goto/log"
 )
 
 const (
