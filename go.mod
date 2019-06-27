@@ -1,7 +1,7 @@
 module github.com/moorara/flax
 
 require (
-	github.com/go-kit/kit v0.8.0
+	github.com/go-kit/kit v0.9.0
 	github.com/gorilla/mux v1.7.2
 	github.com/moorara/goto v0.2.5
 	github.com/prometheus/client_golang v1.0.0
