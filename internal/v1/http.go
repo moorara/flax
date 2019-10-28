@@ -5,153 +5,94 @@ import (
 	"fmt"
 	"hash/fnv"
 	"net/http"
-	"path"
 	"time"
 
 	"github.com/gorilla/mux"
 )
 
-type (
-	// HTTPExpect represents an http expectation
-	HTTPExpect struct {
-		Methods []string          `json:"methods" yaml:"methods"`
-		Path    string            `json:"path" yaml:"path"`
-		Prefix  bool              `json:"prefix" yaml:"prefix"`
-		Queries map[string]string `json:"queries" yaml:"queries"`
-		Headers map[string]string `json:"headers" yaml:"headers"`
-	}
-
-	// HTTPResponse represents a mock http response
-	HTTPResponse struct {
-		Delay      string            `json:"delay" yaml:"delay"`
-		StatusCode int               `json:"status" yaml:"status"`
-		Headers    map[string]string `json:"headers" yaml:"headers"`
-		Body       interface{}       `json:"body" yaml:"body"`
-	}
-
-	// HTTPForward represents a forwarder for an http request
-	HTTPForward struct {
-		Delay   string            `json:"delay" yaml:"delay"`
-		To      string            `json:"to" yaml:"to"`
-		Headers map[string]string `json:"headers" yaml:"headers"`
-	}
-
-	// HTTPMock represents an http mock
-	HTTPMock struct {
-		HTTPExpect    `json:",inline" yaml:",inline"`
-		*HTTPResponse `json:"response" yaml:"response"`
-		*HTTPForward  `json:"forward" yaml:"forward"`
-	}
-)
-
-// SetDefaults set default values for empty fields
-func (e *HTTPExpect) SetDefaults() {
-	if e.Methods == nil || len(e.Methods) == 0 {
-		e.Methods = []string{"GET"}
-	}
-
-	e.Path = path.Clean("/" + e.Path)
-
-	if e.Queries == nil {
-		e.Queries = map[string]string{}
-	}
-
-	if e.Headers == nil {
-		e.Headers = map[string]string{}
-	}
+// HTTPExpect represents an http expectation.
+type HTTPExpect struct {
+	Methods []string          `json:"methods" yaml:"methods"`
+	Path    string            `json:"path" yaml:"path"`
+	Prefix  bool              `json:"prefix" yaml:"prefix"`
+	Queries map[string]string `json:"queries" yaml:"queries"`
+	Headers map[string]string `json:"headers" yaml:"headers"`
 }
 
-// Hash calculates a hash for an http expectation
-func (e *HTTPExpect) Hash() uint64 {
+// Hash calculates a hash for an http expectation.
+func (e HTTPExpect) Hash() uint64 {
 	h := fnv.New64a()
 
-	hashArray(h, true, e.Methods)
+	hashStringSlice(h, true, e.Methods)
 	hashString(h, e.Path)
 	hashBool(h, e.Prefix)
-	hashMap(h, true, e.Queries)
-	hashMap(h, true, e.Headers)
+	hashStringMap(h, true, e.Queries)
+	hashStringMap(h, true, e.Headers)
 
 	return h.Sum64()
 }
 
-// SetDefaults set default values for empty fields
-func (r *HTTPResponse) SetDefaults() {
-	if r.Delay == "" {
-		r.Delay = "0"
-	}
-
-	if r.StatusCode < 100 || r.StatusCode > 599 {
-		r.StatusCode = 200
-	}
-
-	if r.Headers == nil {
-		r.Headers = map[string]string{}
-	}
+// HTTPResponse represents a mock http response.
+type HTTPResponse struct {
+	Delay      string            `json:"delay" yaml:"delay"`
+	StatusCode int               `json:"status" yaml:"status"`
+	Headers    map[string]string `json:"headers" yaml:"headers"`
+	Body       interface{}       `json:"body" yaml:"body"`
 }
 
-// GetHandler returns an http handler
-func (r *HTTPResponse) GetHandler() http.HandlerFunc {
+// Handler returns an http handler.
+func (r HTTPResponse) Handler() http.HandlerFunc {
 	d, _ := time.ParseDuration(r.Delay)
 
 	return func(res http.ResponseWriter, req *http.Request) {
 		time.Sleep(d)
 		res.WriteHeader(r.StatusCode)
 		for key, val := range r.Headers {
-			res.Header().Add(key, val)
+			res.Header().Set(key, val)
 		}
 		json.NewEncoder(res).Encode(r.Body)
 	}
 }
 
-// SetDefaults set default values for empty fields
-func (f *HTTPForward) SetDefaults() {
-	if f.Delay == "" {
-		f.Delay = "0"
-	}
-
-	if f.Headers == nil {
-		f.Headers = map[string]string{}
-	}
+// HTTPForward represents a forwarder for an http request.
+type HTTPForward struct {
+	Delay   string            `json:"delay" yaml:"delay"`
+	To      string            `json:"to" yaml:"to"`
+	Headers map[string]string `json:"headers" yaml:"headers"`
 }
 
-// GetHandler returns an http handler
-func (f *HTTPForward) GetHandler() http.HandlerFunc {
+// Handler returns an http handler.
+func (f HTTPForward) Handler() http.HandlerFunc {
 	d, _ := time.ParseDuration(f.Delay)
 
 	// TODO: implement proxy
 	return func(res http.ResponseWriter, req *http.Request) {
 		time.Sleep(d)
 		res.WriteHeader(http.StatusNotImplemented)
+		for key, val := range f.Headers {
+			res.Header().Add(key, val)
+		}
+
 		json.NewEncoder(res).Encode(JSON{
 			"message": "this functionality is not yet available!",
 		})
 	}
 }
 
-// SetDefaults set default values for empty fields
-func (m *HTTPMock) SetDefaults() {
-	m.HTTPExpect.SetDefaults()
-
-	if m.HTTPResponse == nil && m.HTTPForward == nil {
-		m.HTTPResponse = &HTTPResponse{}
-	}
-
-	if m.HTTPResponse != nil {
-		m.HTTPResponse.SetDefaults()
-	}
-
-	if m.HTTPForward != nil {
-		m.HTTPForward.SetDefaults()
-	}
+// HTTPMock represents an http mock.
+type HTTPMock struct {
+	HTTPExpect    `json:",inline" yaml:",inline"`
+	*HTTPResponse `json:"response" yaml:"response"`
+	*HTTPForward  `json:"forward" yaml:"forward"`
 }
 
-// Hash calculates a hash for an http mock based on the http expectation
-func (m *HTTPMock) Hash() uint64 {
+// Hash calculates a hash for an http mock based on the http expectation.
+func (m HTTPMock) Hash() uint64 {
 	return m.HTTPExpect.Hash()
 }
 
-// RegisterRoutes configure routes for an http mock
-func (m *HTTPMock) RegisterRoutes(router *mux.Router) {
+// RegisterRoutes configure routes for an http mock.
+func (m HTTPMock) RegisterRoutes(router *mux.Router) {
 	route := router.Methods(m.HTTPExpect.Methods...)
 
 	if m.HTTPExpect.Prefix {
@@ -169,8 +110,24 @@ func (m *HTTPMock) RegisterRoutes(router *mux.Router) {
 	}
 
 	if m.HTTPResponse != nil {
-		route.HandlerFunc(m.HTTPResponse.GetHandler())
+		route.HandlerFunc(m.HTTPResponse.Handler())
 	} else if m.HTTPForward != nil {
-		route.HandlerFunc(m.HTTPForward.GetHandler())
+		route.HandlerFunc(m.HTTPForward.Handler())
+	}
+}
+
+// DefaultHTTPMock returns a default HTTPMock.
+func DefaultHTTPMock() HTTPMock {
+	return HTTPMock{
+		HTTPExpect: HTTPExpect{
+			Methods: []string{"GET"},
+			Path:    "/",
+		},
+		HTTPResponse: &HTTPResponse{
+			StatusCode: 200,
+			Headers: map[string]string{
+				"Content-Type": "application/json",
+			},
+		},
 	}
 }
