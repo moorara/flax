@@ -1,0 +1,42 @@
+#
+# REF:
+#   https://help.github.com/en/articles/workflow-syntax-for-github-actions#jobsjob_idstepsif
+#   https://help.github.com/en/articles/contexts-and-expression-syntax-for-github-actions#github-context
+#   https://help.github.com/en/articles/virtual-environments-for-github-actions#creating-and-using-secrets-encrypted-variables
+#
+
+name: Main
+on: push
+jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@master
+      - name: Lint
+        uses: moorara/actions/go-lint@master
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@master
+      - name: Test
+        uses: moorara/actions/go-cover@master
+        with:
+          codeclimate_reporter_id: ${{ secrets.CODECLIMATE_REPORTER_ID }}
+  docker:
+    name: Docker
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@master
+      - uses: moorara/actions/semver@master
+      - name: Build
+        run: make docker docker_tag=$(cat VERSION)
+      - name: Push
+        if: github.ref == 'refs/heads/master'
+        env:
+          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+          DOCKERHUB_PASSWORD: ${{ secrets.DOCKERHUB_PASSWORD }}
+        run: |
+          docker login -u "$DOCKERHUB_USERNAME" -p "$DOCKERHUB_PASSWORD"
+          make push docker_tag=$(cat VERSION)
