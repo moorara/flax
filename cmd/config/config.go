@@ -1,32 +1,12 @@
 package config
 
-import (
-	"github.com/moorara/goto/config"
-)
-
-const (
-	defaultName            = "flax"
-	defaultLogLevel        = "info"
-	defaultControlPort     = ":9999"
-	defaultJaegerAgentAddr = "localhost:6831"
-	defaultJaegerLogSpans  = false
-)
-
-// Config defines the configuration values
-var Config = struct {
-	Name            string `flag:"-" env:"-" file:"-"`
-	LogLevel        string
-	ControlPort     string
-	JaegerAgentAddr string
-	JaegerLogSpans  bool
+// Global is the single global store for all configuration values
+var Global = struct {
+	Name        string `flag:"-" env:"-" file:"-"`
+	LogLevel    string
+	ControlPort string
 }{
-	Name:            defaultName,
-	LogLevel:        defaultLogLevel,
-	ControlPort:     defaultControlPort,
-	JaegerAgentAddr: defaultJaegerAgentAddr,
-	JaegerLogSpans:  defaultJaegerLogSpans,
-}
-
-func init() {
-	config.Pick(&Config)
+	Name:        "flax",
+	LogLevel:    "info",
+	ControlPort: ":9999",
 }
