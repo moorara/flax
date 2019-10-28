@@ -1,11 +1,73 @@
 package v1
 
 import (
+	"errors"
 	"hash/fnv"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 )
+
+func TestFindID(t *testing.T) {
+	tests := []struct {
+		key           string
+		obj           JSON
+		expectedError error
+		expectedValue interface{}
+	}{
+		{
+			key: "id",
+			obj: JSON{
+				"id": "11111111-1111-1111-1111-111111111111",
+			},
+			expectedValue: "11111111-1111-1111-1111-111111111111",
+		},
+		{
+			key: "id",
+			obj: JSON{
+				"_id": "11111111-1111-1111-1111-111111111111",
+			},
+			expectedError: errors.New(`identifier "id" does not exist`),
+		},
+		{
+			obj: JSON{
+				"id": "11111111-1111-1111-1111-111111111111",
+			},
+			expectedValue: "11111111-1111-1111-1111-111111111111",
+		},
+		{
+			obj: JSON{
+				"_id": "11111111-1111-1111-1111-111111111111",
+			},
+			expectedValue: "11111111-1111-1111-1111-111111111111",
+		},
+		{
+			obj: JSON{
+				"Id": "11111111-1111-1111-1111-111111111111",
+			},
+			expectedValue: "11111111-1111-1111-1111-111111111111",
+		},
+		{
+			obj: JSON{
+				"ID": "11111111-1111-1111-1111-111111111111",
+			},
+			expectedValue: "11111111-1111-1111-1111-111111111111",
+		},
+		{
+			obj: JSON{
+				"key": "11111111-1111-1111-1111-111111111111",
+			},
+			expectedError: errors.New("cannot find an identifier"),
+		},
+	}
+
+	for _, tc := range tests {
+		val, err := findID(tc.key, tc.obj)
+
+		assert.Equal(t, tc.expectedError, err)
+		assert.Equal(t, tc.expectedValue, val)
+	}
+}
 
 func TestHashBool(t *testing.T) {
 	tests := []struct {
@@ -103,7 +165,7 @@ func TestHashString(t *testing.T) {
 	}
 }
 
-func TestHashArray(t *testing.T) {
+func TestHashStringSlice(t *testing.T) {
 	tests := []struct {
 		canonical bool
 		first     []string
@@ -140,8 +202,8 @@ func TestHashArray(t *testing.T) {
 		h1 := fnv.New64a()
 		h2 := fnv.New64a()
 
-		hashArray(h1, tc.canonical, tc.first)
-		hashArray(h2, tc.canonical, tc.second)
+		hashStringSlice(h1, tc.canonical, tc.first)
+		hashStringSlice(h2, tc.canonical, tc.second)
 
 		if tc.equal {
 			assert.Equal(t, h1.Sum64(), h2.Sum64())
@@ -151,7 +213,7 @@ func TestHashArray(t *testing.T) {
 	}
 }
 
-func TestHashMap(t *testing.T) {
+func TestHashStringMap(t *testing.T) {
 	tests := []struct {
 		canonical bool
 		first     map[string]string
@@ -197,79 +259,13 @@ func TestHashMap(t *testing.T) {
 		h1 := fnv.New64a()
 		h2 := fnv.New64a()
 
-		hashMap(h1, tc.canonical, tc.first)
-		hashMap(h2, tc.canonical, tc.second)
+		hashStringMap(h1, tc.canonical, tc.first)
+		hashStringMap(h2, tc.canonical, tc.second)
 
 		if tc.equal {
 			assert.Equal(t, h1.Sum64(), h2.Sum64())
 		} else {
 			assert.NotEqual(t, h1.Sum64(), h2.Sum64())
-		}
-	}
-}
-
-func TestFindID(t *testing.T) {
-	tests := []struct {
-		idProp        string
-		object        JSON
-		expectedError string
-		expectedValue interface{}
-	}{
-		{
-			idProp: "id",
-			object: JSON{
-				"id": "11111111-1111-1111-1111-111111111111",
-			},
-			expectedValue: "11111111-1111-1111-1111-111111111111",
-		},
-		{
-			idProp: "id",
-			object: JSON{
-				"_id": "11111111-1111-1111-1111-111111111111",
-			},
-			expectedError: "identifier id does not exist",
-		},
-		{
-			object: JSON{
-				"id": "11111111-1111-1111-1111-111111111111",
-			},
-			expectedValue: "11111111-1111-1111-1111-111111111111",
-		},
-		{
-			object: JSON{
-				"_id": "11111111-1111-1111-1111-111111111111",
-			},
-			expectedValue: "11111111-1111-1111-1111-111111111111",
-		},
-		{
-			object: JSON{
-				"Id": "11111111-1111-1111-1111-111111111111",
-			},
-			expectedValue: "11111111-1111-1111-1111-111111111111",
-		},
-		{
-			object: JSON{
-				"ID": "11111111-1111-1111-1111-111111111111",
-			},
-			expectedValue: "11111111-1111-1111-1111-111111111111",
-		},
-		{
-			object: JSON{
-				"key": "11111111-1111-1111-1111-111111111111",
-			},
-			expectedError: "cannot find an identifier",
-		},
-	}
-
-	for _, tc := range tests {
-		val, err := findID(tc.idProp, tc.object)
-
-		if tc.expectedError != "" {
-			assert.Contains(t, err.Error(), tc.expectedError)
-			assert.Nil(t, val)
-		} else {
-			assert.NoError(t, err)
-			assert.Equal(t, tc.expectedValue, val)
 		}
 	}
 }
