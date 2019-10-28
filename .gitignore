@@ -11,7 +11,8 @@ flax-*
 *.log
 *.out
 *.test
-coverage/
+cover.html
+coverage.html
 
 # Exceptions
 !Dockerfile.test
