@@ -24,8 +24,8 @@ func TestHTTPExpectHash(t *testing.T) {
 				Path:    "/api/v1/sendMessage",
 				Prefix:  false,
 				Queries: map[string]string{
-					"tenantId": "[0-9A-Za-z-]+",
-					"groupId":  "[0-9A-Za-z-]+",
+					"tenantId": "[0-9A-Fa-f-]+",
+					"groupId":  "[0-9A-Fa-f-]+",
 				},
 				Headers: map[string]string{
 					"Accept":       "application/json",
@@ -37,8 +37,8 @@ func TestHTTPExpectHash(t *testing.T) {
 				Path:    "/api/v1/sendMessage",
 				Prefix:  false,
 				Queries: map[string]string{
-					"tenantId": "[0-9A-Za-z-]+",
-					"groupId":  "[0-9A-Za-z-]+",
+					"tenantId": "[0-9A-Fa-f-]+",
+					"groupId":  "[0-9A-Fa-f-]+",
 				},
 				Headers: map[string]string{
 					"Accept":       "application/json",
@@ -54,8 +54,8 @@ func TestHTTPExpectHash(t *testing.T) {
 				Path:    "/api/v1/sendMessage",
 				Prefix:  false,
 				Queries: map[string]string{
-					"tenantId": "[0-9A-Za-z-]+",
-					"groupId":  "[0-9A-Za-z-]+",
+					"tenantId": "[0-9A-Fa-f-]+",
+					"groupId":  "[0-9A-Fa-f-]+",
 				},
 				Headers: map[string]string{
 					"Accept":       "application/json",
@@ -67,8 +67,8 @@ func TestHTTPExpectHash(t *testing.T) {
 				Path:    "/api/v1/sendMessage",
 				Prefix:  false,
 				Queries: map[string]string{
-					"tenantId": "[0-9A-Za-z-]+",
-					"groupId":  "[0-9A-Za-z-]+",
+					"tenantId": "[0-9A-Fa-f-]+",
+					"groupId":  "[0-9A-Fa-f-]+",
 				},
 				Headers: map[string]string{
 					"Accept":       "application/json",
@@ -127,8 +127,8 @@ func TestHTTPExpectSetDefaults(t *testing.T) {
 				Path:    "/api/v1/sendMessage",
 				Prefix:  false,
 				Queries: map[string]string{
-					"tenantId": "[0-9A-Za-z-]+",
-					"groupId":  "[0-9A-Za-z-]+",
+					"tenantId": "[0-9A-Fa-f-]+",
+					"groupId":  "[0-9A-Fa-f-]+",
 				},
 				Headers: map[string]string{
 					"Accept":       "application/json",
@@ -140,8 +140,8 @@ func TestHTTPExpectSetDefaults(t *testing.T) {
 				Path:    "/api/v1/sendMessage",
 				Prefix:  false,
 				Queries: map[string]string{
-					"tenantId": "[0-9A-Za-z-]+",
-					"groupId":  "[0-9A-Za-z-]+",
+					"tenantId": "[0-9A-Fa-f-]+",
+					"groupId":  "[0-9A-Fa-f-]+",
 				},
 				Headers: map[string]string{
 					"Accept":       "application/json",
@@ -374,8 +374,8 @@ func TestHTTPMockHash(t *testing.T) {
 					Path:    "/api/v1/sendMessage",
 					Prefix:  false,
 					Queries: map[string]string{
-						"tenantId": "[0-9A-Za-z-]+",
-						"groupId":  "[0-9A-Za-z-]+",
+						"tenantId": "[0-9A-Fa-f-]+",
+						"groupId":  "[0-9A-Fa-f-]+",
 					},
 					Headers: map[string]string{
 						"Accept":       "application/json",
@@ -394,8 +394,8 @@ func TestHTTPMockHash(t *testing.T) {
 					Path:    "/api/v1/sendMessage",
 					Prefix:  false,
 					Queries: map[string]string{
-						"tenantId": "[0-9A-Za-z-]+",
-						"groupId":  "[0-9A-Za-z-]+",
+						"tenantId": "[0-9A-Fa-f-]+",
+						"groupId":  "[0-9A-Fa-f-]+",
 					},
 					Headers: map[string]string{
 						"Accept":       "application/json",
@@ -423,8 +423,8 @@ func TestHTTPMockHash(t *testing.T) {
 					Path:    "/api/v1/sendMessage",
 					Prefix:  false,
 					Queries: map[string]string{
-						"tenantId": "[0-9A-Za-z-]+",
-						"groupId":  "[0-9A-Za-z-]+",
+						"tenantId": "[0-9A-Fa-f-]+",
+						"groupId":  "[0-9A-Fa-f-]+",
 					},
 					Headers: map[string]string{
 						"Accept":       "application/json",
@@ -443,8 +443,8 @@ func TestHTTPMockHash(t *testing.T) {
 					Path:    "/api/v1/sendMessage",
 					Prefix:  false,
 					Queries: map[string]string{
-						"tenantId": "[0-9A-Za-z-]+",
-						"groupId":  "[0-9A-Za-z-]+",
+						"tenantId": "[0-9A-Fa-f-]+",
+						"groupId":  "[0-9A-Fa-f-]+",
 					},
 					Headers: map[string]string{
 						"Accept":       "application/json",
@@ -469,8 +469,8 @@ func TestHTTPMockHash(t *testing.T) {
 					Path:    "/api/v1/sendMessage",
 					Prefix:  false,
 					Queries: map[string]string{
-						"tenantId": "[0-9A-Za-z-]+",
-						"groupId":  "[0-9A-Za-z-]+",
+						"tenantId": "[0-9A-Fa-f-]+",
+						"groupId":  "[0-9A-Fa-f-]+",
 					},
 					Headers: map[string]string{
 						"Accept":       "application/json",
@@ -489,8 +489,8 @@ func TestHTTPMockHash(t *testing.T) {
 					Path:    "/api/v1/sendMessage",
 					Prefix:  false,
 					Queries: map[string]string{
-						"tenantId": "[0-9A-Za-z-]+",
-						"groupId":  "[0-9A-Za-z-]+",
+						"tenantId": "[0-9A-Fa-f-]+",
+						"groupId":  "[0-9A-Fa-f-]+",
 					},
 					Headers: map[string]string{
 						"Accept":       "application/json",
@@ -518,8 +518,8 @@ func TestHTTPMockHash(t *testing.T) {
 					Path:    "/api/v1/sendMessage",
 					Prefix:  false,
 					Queries: map[string]string{
-						"tenantId": "[0-9A-Za-z-]+",
-						"groupId":  "[0-9A-Za-z-]+",
+						"tenantId": "[0-9A-Fa-f-]+",
+						"groupId":  "[0-9A-Fa-f-]+",
 					},
 					Headers: map[string]string{
 						"Accept":       "application/json",
@@ -538,8 +538,8 @@ func TestHTTPMockHash(t *testing.T) {
 					Path:    "/api/v1/sendMessage",
 					Prefix:  false,
 					Queries: map[string]string{
-						"tenantId": "[0-9A-Za-z-]+",
-						"groupId":  "[0-9A-Za-z-]+",
+						"tenantId": "[0-9A-Fa-f-]+",
+						"groupId":  "[0-9A-Fa-f-]+",
 					},
 					Headers: map[string]string{
 						"Accept":       "application/json",
@@ -692,8 +692,8 @@ func TestHTTPMockRegisterRoutes(t *testing.T) {
 					Path:    "/api/v1/sendMessage",
 					Prefix:  false,
 					Queries: map[string]string{
-						"tenantId": "[0-9A-Za-z-]+",
-						"groupId":  "[0-9A-Za-z-]+",
+						"tenantId": "[0-9A-Fa-f-]+",
+						"groupId":  "[0-9A-Fa-f-]+",
 					},
 					Headers: map[string]string{
 						"Accept":       "application/json",
@@ -737,8 +737,8 @@ func TestHTTPMockRegisterRoutes(t *testing.T) {
 					Path:    "/api/v1/sendMessage",
 					Prefix:  true,
 					Queries: map[string]string{
-						"tenantId": "[0-9A-Za-z-]+",
-						"groupId":  "[0-9A-Za-z-]+",
+						"tenantId": "[0-9A-Fa-f-]+",
+						"groupId":  "[0-9A-Fa-f-]+",
 					},
 					Headers: map[string]string{
 						"Accept":       "application/json",
@@ -782,8 +782,8 @@ func TestHTTPMockRegisterRoutes(t *testing.T) {
 					Path:    "/api/v1/sendMessage",
 					Prefix:  false,
 					Queries: map[string]string{
-						"tenantId": "[0-9A-Za-z-]+",
-						"groupId":  "[0-9A-Za-z-]+",
+						"tenantId": "[0-9A-Fa-f-]+",
+						"groupId":  "[0-9A-Fa-f-]+",
 					},
 					Headers: map[string]string{
 						"Accept":       "application/json",
@@ -868,10 +868,8 @@ func TestDefaultHTTPMock(t *testing.T) {
 				HTTPResponse: &HTTPResponse{
 					Delay:      "",
 					StatusCode: 200,
-					Headers: map[string]string{
-						"Content-Type": "application/json",
-					},
-					Body: nil,
+					Headers:    nil,
+					Body:       nil,
 				},
 			},
 		},

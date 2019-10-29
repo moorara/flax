@@ -1,61 +1,55 @@
 config:
-  http_port: 8080
-  https_port: 8443
+  http_port: 9080
+  https_port: 9443
 
 http:
   - methods: [ GET ]
-    path: /me
+    path: /health
+    response:
+      status: 200
+  - methods: [ GET ]
+    path: /app
+    forward:
+      to: http://example.com
+      headers:
+        Is-Test: "true"
+  - methods: [ POST, PUT ]
+    path: /api/v1/sendMessage
     queries:
-      tenantId: \w+
+      tenantId: "[0-9A-Fa-f-]+"
+      groupId: "[0-9A-Fa-f-]+"
     headers:
+      Accept: application/json
+      Content-Type: application/json
       Authorization: "Bearer .*"
     response:
       delay: 10ms
-      status: 200
+      status: 201
       headers:
         Content-Type: "application/json"
       body: {
-        "id": "5da8349a-0707-4064-8fad-74cedb48a8fc",
-        "name": "John Doe",
-        "email": "john.doe@example.com"
+        "id": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"
       }
-  - methods: [ POST, PUT ]
-    path: /v1/sessions
-    prefix: true
-    queries:
-      tenantId: \w+
-    headers:
-      Accept: "application/json"
-      Content-Type: "application/json"
-    forward:
-      delay: 10ms
-      to: http://session-manager:8800/api/v1/sessions
-      headers:
-        Referer: flax
 
 rest:
-  - base_path: /api/v1/cars
-    store:
-      objects: [
-        { "id": "ad2bd67b-172e-4778-a8a3-7cfb626685b9", "make": "Mazda", "model": "CX-5" },
-        { "id": "26ee9c87-fdbb-48cf-be0a-add9a3d87189", "make": "Hyundai", "model": "Sonata" }
-      ]
   - base_path: /api/v1/teams
     headers:
+      Accept: application/json
+      Content-Type: application/json
       Authorization: "Bearer .*"
     response:
       delay: 10ms
-      get_status: 206
-      post_status: 202
-      put_status: 202
-      patch_status: 202
-      delete_status: 202
-      list_property: data
+      get_status: 200
+      post_status: 201
+      put_status: 200
+      patch_status: 200
+      delete_status: 204
       headers:
-        Content-Type: "application/json"
+        Content-Type: application/json
+      list_key: data
     store:
       identifier: _id
       objects: [
-        { "_id": "d93ce179-50f7-469e-bb36-1b3746145f00", "name": "Back-end", "tags": [ "cloud", "go" ] },
-        { "_id": "8cd6ef6c-2095-4c75-bc66-6f38e785299d", "name": "Front-end", "tags": [ "react", "redux" ] }
+        { "_id": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa", "name": "Back-end" },
+        { "_id": "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb", "name": "Front-end" }
       ]

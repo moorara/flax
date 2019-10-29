@@ -1,48 +1,47 @@
 {
   "config": {
-    "httpPort": 8080,
-    "httpsPort": 8443
+    "httpPort": 9080,
+    "httpsPort": 9443
   },
 
   "http": [
     {
       "methods": [ "GET" ],
-      "path": "/me",
-      "queries": {
-        "tenantId": "\\w+"
-      },
-      "headers": {
-        "Authorization": "Bearer .*"
-      },
+      "path": "/health",
       "response": {
-        "delay": "10ms",
-        "status": 200,
+        "status": 200
+      }
+    },
+    {
+      "methods": [ "GET" ],
+      "path": "/app",
+      "forward": {
+        "to": "http://example.com",
         "headers": {
-          "Content-Type": "application/json"
-        },
-        "body": {
-          "id": "5da8349a-0707-4064-8fad-74cedb48a8fc",
-          "name": "John Doe",
-          "email": "john.doe@example.com"
+          "Is-Test": "true"
         }
       }
     },
     {
       "methods": [ "POST", "PUT" ],
-      "path": "/v1/sessions",
-      "prefix": true,
+      "path": "/api/v1/sendMessage",
       "queries": {
-        "tenantId": "\\w+"
+        "tenantId": "[0-9A-Fa-f-]+",
+        "groupId": "[0-9A-Fa-f-]+"
       },
       "headers": {
         "Accept": "application/json",
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
+        "Authorization": "Bearer .*"
       },
-      "forward": {
+      "response": {
         "delay": "10ms",
-        "to": "http://session-manager:8800/api/v1/sessions",
+        "status": 201,
         "headers": {
-          "Referer": "flax"
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "id": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"
         }
       }
     }
@@ -50,36 +49,29 @@
 
   "rest": [
     {
-      "basePath": "/api/v1/cars",
-      "store": {
-        "objects": [
-          { "id": "ad2bd67b-172e-4778-a8a3-7cfb626685b9", "make": "Mazda", "model": "CX-5" },
-          { "id": "26ee9c87-fdbb-48cf-be0a-add9a3d87189", "make": "Hyundai", "model": "Sonata" }
-        ]
-      }
-    },
-    {
       "basePath": "/api/v1/teams",
       "headers": {
+        "Accept": "application/json",
+        "Content-Type": "application/json",
         "Authorization": "Bearer .*"
       },
       "response": {
         "delay": "10ms",
-        "getStatus": 206,
-        "postStatus": 202,
-        "putStatus": 202,
-        "patchStatus": 202,
-        "deleteStatus": 202,
-        "listProperty": "data",
+        "getStatus": 200,
+        "postStatus": 201,
+        "putStatus": 200,
+        "patchStatus": 200,
+        "deleteStatus": 204,
         "headers": {
           "Content-Type": "application/json"
-        }
+        },
+        "listKey": "data"
       },
       "store": {
         "identifier": "_id",
         "objects": [
-          { "_id": "d93ce179-50f7-469e-bb36-1b3746145f00", "name": "Back-end", "tags": [ "cloud", "go" ] },
-          { "_id": "8cd6ef6c-2095-4c75-bc66-6f38e785299d", "name": "Front-end", "tags": [ "react", "redux" ] }
+          { "_id": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa", "name": "Back-end" },
+          { "_id": "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb", "name": "Front-end" }
         ]
       }
     }
