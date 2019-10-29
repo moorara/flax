@@ -1,7 +1,8 @@
-package v1
+package service
 
 import (
 	"github.com/gorilla/mux"
+	"github.com/moorara/observe/log"
 )
 
 // Mock is the interface for a mock type.
@@ -12,13 +13,15 @@ type Mock interface {
 
 // MockService provides functionalities to manage mocks.
 type MockService struct {
-	mocks map[uint64]Mock
+	logger *log.Logger
+	mocks  map[uint64]Mock
 }
 
 // NewMockService creates a new instance of MockService.
-func NewMockService() *MockService {
+func NewMockService(logger *log.Logger) *MockService {
 	return &MockService{
-		mocks: map[uint64]Mock{},
+		logger: logger,
+		mocks:  map[uint64]Mock{},
 	}
 }
 
@@ -28,6 +31,7 @@ func (s *MockService) Add(mocks ...Mock) {
 	for _, m := range mocks {
 		key := m.Hash()
 		s.mocks[key] = m
+		s.logger.DebugKV("message", "mock added.")
 	}
 }
 
@@ -36,6 +40,7 @@ func (s *MockService) Delete(mocks ...Mock) {
 	for _, m := range mocks {
 		key := m.Hash()
 		delete(s.mocks, key)
+		s.logger.DebugKV("message", "mock deleted.")
 	}
 }
 

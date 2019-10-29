@@ -1,4 +1,4 @@
-package v1
+package spec
 
 import (
 	"testing"
@@ -7,6 +7,31 @@ import (
 )
 
 var (
+	defaultSpec = &Spec{
+		Config{
+			HTTPPort:  8080,
+			HTTPSPort: 8443,
+		},
+		[]HTTPMock{
+			HTTPMock{
+				HTTPExpect: HTTPExpect{
+					Methods: []string{"GET"},
+					Path:    "/",
+					Prefix:  false,
+					Queries: nil,
+					Headers: nil,
+				},
+				HTTPResponse: &HTTPResponse{
+					Delay:      "",
+					StatusCode: 200,
+					Headers:    nil,
+					Body:       nil,
+				},
+			},
+		},
+		[]RESTMock{},
+	}
+
 	specSimpleJSON = &Spec{
 		Config: Config{
 			HTTPPort:  8080,
@@ -397,6 +422,25 @@ func TestConfigSetDefaults(t *testing.T) {
 	}
 }
 
+func TestDefaultSpec(t *testing.T) {
+	tests := []struct {
+		name         string
+		expectedSpec *Spec
+	}{
+		{
+			"OK",
+			defaultSpec,
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			spec := DefaultSpec()
+			assert.Equal(t, tc.expectedSpec, spec)
+		})
+	}
+}
+
 func TestReadSpec(t *testing.T) {
 	tests := []struct {
 		name          string
@@ -407,8 +451,8 @@ func TestReadSpec(t *testing.T) {
 		{
 			name:          "NoFile",
 			path:          "./test/spec",
-			expectedError: "no such file or directory",
-			expectedSpec:  nil,
+			expectedError: "",
+			expectedSpec:  defaultSpec,
 		},
 		{
 			name:          "UnknownFormat",

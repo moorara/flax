@@ -1,4 +1,4 @@
-package v1
+package spec
 
 import (
 	"encoding/json"
@@ -10,8 +10,8 @@ import (
 
 // Config has the specifications for mock server configurations.
 type Config struct {
-	HTTPPort  int `json:"httpPort" yaml:"http_port"`
-	HTTPSPort int `json:"httpsPort" yaml:"https_port"`
+	HTTPPort  uint16 `json:"httpPort" yaml:"http_port"`
+	HTTPSPort uint16 `json:"httpsPort" yaml:"https_port"`
 }
 
 // SetDefaults set default values for empty fields.
@@ -32,10 +32,28 @@ type Spec struct {
 	RESTMocks []RESTMock `json:"rest" yaml:"rest"`
 }
 
+// DefaultSpec returns a default Spec.
+func DefaultSpec() *Spec {
+	config := Config{}
+	config.SetDefaults()
+
+	return &Spec{
+		config,
+		[]HTTPMock{
+			DefaultHTTPMock(),
+		},
+		[]RESTMock{},
+	}
+}
+
 // ReadSpec reads and returns a Spec from a JSON or YAML file.
+// It returns a default spec if no spec file found.
 func ReadSpec(path string) (*Spec, error) {
 	f, err := os.Open(path)
 	if err != nil {
+		if os.IsNotExist(err) {
+			return DefaultSpec(), nil
+		}
 		return nil, err
 	}
 	defer f.Close()
