@@ -1,61 +1,14 @@
 package v1
 
 import (
+	"encoding/json"
+	"net/http"
+	"net/http/httptest"
 	"testing"
 
+	"github.com/gorilla/mux"
 	"github.com/stretchr/testify/assert"
 )
-
-func TestRESTExpectSetDefaults(t *testing.T) {
-	tests := []struct {
-		name           string
-		expect         RESTExpect
-		expectedExpect RESTExpect
-	}{
-		{
-			"Empty",
-			RESTExpect{},
-			RESTExpect{
-				BasePath: "/",
-				Headers:  map[string]string{},
-			},
-		},
-		{
-			"DefaultRequired",
-			RESTExpect{
-				BasePath: "/cars",
-			},
-			RESTExpect{
-				BasePath: "/cars",
-				Headers:  map[string]string{},
-			},
-		},
-		{
-			"NoDefaultRequired",
-			RESTExpect{
-				BasePath: "/teams",
-				Headers: map[string]string{
-					"Accept":       "application/json",
-					"Content-Type": "application/json",
-				},
-			},
-			RESTExpect{
-				BasePath: "/teams",
-				Headers: map[string]string{
-					"Accept":       "application/json",
-					"Content-Type": "application/json",
-				},
-			},
-		},
-	}
-
-	for _, tc := range tests {
-		t.Run(tc.name, func(t *testing.T) {
-			tc.expect.SetDefaults()
-			assert.Equal(t, tc.expectedExpect, tc.expect)
-		})
-	}
-}
 
 func TestRESTExpectHash(t *testing.T) {
 	tests := []struct {
@@ -69,41 +22,48 @@ func TestRESTExpectHash(t *testing.T) {
 			RESTExpect{
 				BasePath: "/api/v1/teams",
 				Headers: map[string]string{
+					"Accept":       "application/json",
 					"Content-Type": "application/json",
 				},
 			},
 			RESTExpect{
 				BasePath: "/api/v1/teams",
 				Headers: map[string]string{
+					"Accept":       "application/json",
 					"Content-Type": "application/json",
 				},
 			},
 			true,
 		},
 		{
-			"NotEqual",
-			RESTExpect{
-				BasePath: "/api/v1/cars",
-				Headers:  map[string]string{},
-			},
-			RESTExpect{
-				BasePath: "/api/v1/teams",
-				Headers:  map[string]string{},
-			},
-			false,
-		},
-		{
-			"NotEqual",
+			"DifferentVersions",
 			RESTExpect{
 				BasePath: "/api/v1/teams",
 				Headers: map[string]string{
+					"Accept":       "application/json",
 					"Content-Type": "application/json",
 				},
 			},
 			RESTExpect{
+				BasePath: "/api/v2/teams",
+				Headers: map[string]string{
+					"Accept":       "application/json",
+					"Content-Type": "application/json",
+				},
+			},
+			false,
+		},
+		{
+			"DifferentHeaders",
+			RESTExpect{
+				BasePath: "/api/v1/teams",
+				Headers:  map[string]string{},
+			},
+			RESTExpect{
 				BasePath: "/api/v1/teams",
 				Headers: map[string]string{
-					"Content-Type": "application/ld+json",
+					"Accept":       "application/json",
+					"Content-Type": "application/json",
 				},
 			},
 			false,
@@ -121,81 +81,7 @@ func TestRESTExpectHash(t *testing.T) {
 	}
 }
 
-func TestRESTResponseSetDefaults(t *testing.T) {
-	tests := []struct {
-		name             string
-		response         RESTResponse
-		expectedResponse RESTResponse
-	}{
-		{
-			"Empty",
-			RESTResponse{},
-			RESTResponse{
-				Delay:            "0",
-				GetStatusCode:    200,
-				PostStatusCode:   201,
-				PutStatusCode:    200,
-				PatchStatusCode:  200,
-				DeleteStatusCode: 204,
-				ListProperty:     "",
-				Headers:          map[string]string{},
-			},
-		},
-		{
-			"DefaultRequired",
-			RESTResponse{
-				Delay:        "100ms",
-				ListProperty: "data",
-			},
-			RESTResponse{
-				Delay:            "100ms",
-				GetStatusCode:    200,
-				PostStatusCode:   201,
-				PutStatusCode:    200,
-				PatchStatusCode:  200,
-				DeleteStatusCode: 204,
-				ListProperty:     "data",
-				Headers:          map[string]string{},
-			},
-		},
-		{
-			"NoDefaultRequired",
-			RESTResponse{
-				Delay:            "100ms",
-				GetStatusCode:    206,
-				PostStatusCode:   202,
-				PutStatusCode:    204,
-				PatchStatusCode:  204,
-				DeleteStatusCode: 202,
-				ListProperty:     "data",
-				Headers: map[string]string{
-					"Content-Type": "application/json",
-				},
-			},
-			RESTResponse{
-				Delay:            "100ms",
-				GetStatusCode:    206,
-				PostStatusCode:   202,
-				PutStatusCode:    204,
-				PatchStatusCode:  204,
-				DeleteStatusCode: 202,
-				ListProperty:     "data",
-				Headers: map[string]string{
-					"Content-Type": "application/json",
-				},
-			},
-		},
-	}
-
-	for _, tc := range tests {
-		t.Run(tc.name, func(t *testing.T) {
-			tc.response.SetDefaults()
-			assert.Equal(t, tc.expectedResponse, tc.response)
-		})
-	}
-}
-
-func TestRESTStoreSetDefaults(t *testing.T) {
+func TestRESTStoreIndex(t *testing.T) {
 	tests := []struct {
 		name          string
 		store         RESTStore
@@ -206,19 +92,27 @@ func TestRESTStoreSetDefaults(t *testing.T) {
 			RESTStore{},
 			RESTStore{
 				Identifier: "",
-				Objects:    []JSON{},
+				Objects:    nil,
 				Directory:  map[interface{}]JSON{},
 			},
 		},
 		{
-			"DefaultRequired",
+			"WithoutIdentifier",
 			RESTStore{
-				Identifier: "_id",
+				Objects: []JSON{
+					{"_id": "aaaa", "name": "Back-end"},
+					{"_id": "bbbb", "name": "Front-end"},
+				},
 			},
 			RESTStore{
-				Identifier: "_id",
-				Objects:    []JSON{},
-				Directory:  map[interface{}]JSON{},
+				Objects: []JSON{
+					{"_id": "aaaa", "name": "Back-end"},
+					{"_id": "bbbb", "name": "Front-end"},
+				},
+				Directory: map[interface{}]JSON{
+					"aaaa": {"_id": "aaaa", "name": "Back-end"},
+					"bbbb": {"_id": "bbbb", "name": "Front-end"},
+				},
 			},
 		},
 		{
@@ -226,61 +120,19 @@ func TestRESTStoreSetDefaults(t *testing.T) {
 			RESTStore{
 				Identifier: "id",
 				Objects: []JSON{
-					{"id": "d93ce179-50f7-469e-bb36-1b3746145f00", "name": "Back-end", "tags": []interface{}{"cloud", "go"}},
-					{"id": "8cd6ef6c-2095-4c75-bc66-6f38e785299d", "name": "Front-end", "tags": []interface{}{"react", "redux"}},
+					{"id": "aaaa", "name": "Back-end"},
+					{"id": "bbbb", "name": "Front-end"},
 				},
 			},
 			RESTStore{
 				Identifier: "id",
 				Objects: []JSON{
-					{"id": "d93ce179-50f7-469e-bb36-1b3746145f00", "name": "Back-end", "tags": []interface{}{"cloud", "go"}},
-					{"id": "8cd6ef6c-2095-4c75-bc66-6f38e785299d", "name": "Front-end", "tags": []interface{}{"react", "redux"}},
+					{"id": "aaaa", "name": "Back-end"},
+					{"id": "bbbb", "name": "Front-end"},
 				},
 				Directory: map[interface{}]JSON{
-					"d93ce179-50f7-469e-bb36-1b3746145f00": {"id": "d93ce179-50f7-469e-bb36-1b3746145f00", "name": "Back-end", "tags": []interface{}{"cloud", "go"}},
-					"8cd6ef6c-2095-4c75-bc66-6f38e785299d": {"id": "8cd6ef6c-2095-4c75-bc66-6f38e785299d", "name": "Front-end", "tags": []interface{}{"react", "redux"}},
-				},
-			},
-		},
-		{
-			"WithoutIdentifier",
-			RESTStore{
-				Identifier: "",
-				Objects: []JSON{
-					{"_id": "d93ce179-50f7-469e-bb36-1b3746145f00", "name": "Back-end", "tags": []interface{}{"cloud", "go"}},
-					{"_id": "8cd6ef6c-2095-4c75-bc66-6f38e785299d", "name": "Front-end", "tags": []interface{}{"react", "redux"}},
-				},
-			},
-			RESTStore{
-				Identifier: "",
-				Objects: []JSON{
-					{"_id": "d93ce179-50f7-469e-bb36-1b3746145f00", "name": "Back-end", "tags": []interface{}{"cloud", "go"}},
-					{"_id": "8cd6ef6c-2095-4c75-bc66-6f38e785299d", "name": "Front-end", "tags": []interface{}{"react", "redux"}},
-				},
-				Directory: map[interface{}]JSON{
-					"d93ce179-50f7-469e-bb36-1b3746145f00": {"_id": "d93ce179-50f7-469e-bb36-1b3746145f00", "name": "Back-end", "tags": []interface{}{"cloud", "go"}},
-					"8cd6ef6c-2095-4c75-bc66-6f38e785299d": {"_id": "8cd6ef6c-2095-4c75-bc66-6f38e785299d", "name": "Front-end", "tags": []interface{}{"react", "redux"}},
-				},
-			},
-		},
-		{
-			"CustomIdentifier",
-			RESTStore{
-				Identifier: "key",
-				Objects: []JSON{
-					{"key": "d93ce179-50f7-469e-bb36-1b3746145f00", "name": "Back-end", "tags": []interface{}{"cloud", "go"}},
-					{"key": "8cd6ef6c-2095-4c75-bc66-6f38e785299d", "name": "Front-end", "tags": []interface{}{"react", "redux"}},
-				},
-			},
-			RESTStore{
-				Identifier: "key",
-				Objects: []JSON{
-					{"key": "d93ce179-50f7-469e-bb36-1b3746145f00", "name": "Back-end", "tags": []interface{}{"cloud", "go"}},
-					{"key": "8cd6ef6c-2095-4c75-bc66-6f38e785299d", "name": "Front-end", "tags": []interface{}{"react", "redux"}},
-				},
-				Directory: map[interface{}]JSON{
-					"d93ce179-50f7-469e-bb36-1b3746145f00": {"key": "d93ce179-50f7-469e-bb36-1b3746145f00", "name": "Back-end", "tags": []interface{}{"cloud", "go"}},
-					"8cd6ef6c-2095-4c75-bc66-6f38e785299d": {"key": "8cd6ef6c-2095-4c75-bc66-6f38e785299d", "name": "Front-end", "tags": []interface{}{"react", "redux"}},
+					"aaaa": {"id": "aaaa", "name": "Back-end"},
+					"bbbb": {"id": "bbbb", "name": "Front-end"},
 				},
 			},
 		},
@@ -288,49 +140,8 @@ func TestRESTStoreSetDefaults(t *testing.T) {
 
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			tc.store.SetDefaults()
+			tc.store.Index()
 			assert.Equal(t, tc.expectedStore, tc.store)
-		})
-	}
-}
-
-func TestRESTMockSetDefaults(t *testing.T) {
-	tests := []struct {
-		name         string
-		mock         RESTMock
-		expectedMock RESTMock
-	}{
-		{
-			"DefaultsRequired",
-			RESTMock{},
-			RESTMock{
-				RESTExpect{
-					BasePath: "/",
-					Headers:  map[string]string{},
-				},
-				RESTResponse{
-					Delay:            "0",
-					GetStatusCode:    200,
-					PostStatusCode:   201,
-					PutStatusCode:    200,
-					PatchStatusCode:  200,
-					DeleteStatusCode: 204,
-					ListProperty:     "",
-					Headers:          map[string]string{},
-				},
-				RESTStore{
-					Identifier: "",
-					Objects:    []JSON{},
-					Directory:  map[interface{}]JSON{},
-				},
-			},
-		},
-	}
-
-	for _, tc := range tests {
-		t.Run(tc.name, func(t *testing.T) {
-			tc.mock.SetDefaults()
-			assert.Equal(t, tc.expectedMock, tc.mock)
 		})
 	}
 }
@@ -348,18 +159,19 @@ func TestRESTMockHash(t *testing.T) {
 				RESTExpect{
 					BasePath: "/api/v1/teams",
 					Headers: map[string]string{
+						"Accept":       "application/json",
 						"Content-Type": "application/json",
 					},
 				},
 				RESTResponse{
-					Delay:            "0",
+					Delay:            "",
 					GetStatusCode:    200,
 					PostStatusCode:   201,
 					PutStatusCode:    200,
 					PatchStatusCode:  200,
 					DeleteStatusCode: 204,
-					ListProperty:     "",
 					Headers:          map[string]string{},
+					ListKey:          "",
 				},
 				RESTStore{
 					Identifier: "",
@@ -370,18 +182,19 @@ func TestRESTMockHash(t *testing.T) {
 				RESTExpect{
 					BasePath: "/api/v1/teams",
 					Headers: map[string]string{
+						"Accept":       "application/json",
 						"Content-Type": "application/json",
 					},
 				},
 				RESTResponse{
-					Delay:            "100ms",
+					Delay:            "2ms",
 					GetStatusCode:    200,
 					PostStatusCode:   201,
 					PutStatusCode:    200,
 					PatchStatusCode:  200,
 					DeleteStatusCode: 204,
-					ListProperty:     "data",
 					Headers:          map[string]string{},
+					ListKey:          "data",
 				},
 				RESTStore{
 					Identifier: "_id",
@@ -391,21 +204,24 @@ func TestRESTMockHash(t *testing.T) {
 			true,
 		},
 		{
-			"NotEqual",
+			"DifferentVersions",
 			RESTMock{
 				RESTExpect{
-					BasePath: "/api/v1/cars",
-					Headers:  map[string]string{},
+					BasePath: "/api/v1/teams",
+					Headers: map[string]string{
+						"Accept":       "application/json",
+						"Content-Type": "application/json",
+					},
 				},
 				RESTResponse{
-					Delay:            "0",
+					Delay:            "",
 					GetStatusCode:    200,
 					PostStatusCode:   201,
 					PutStatusCode:    200,
 					PatchStatusCode:  200,
 					DeleteStatusCode: 204,
-					ListProperty:     "",
 					Headers:          map[string]string{},
+					ListKey:          "",
 				},
 				RESTStore{
 					Identifier: "",
@@ -414,18 +230,21 @@ func TestRESTMockHash(t *testing.T) {
 			},
 			RESTMock{
 				RESTExpect{
-					BasePath: "/api/v1/teams",
-					Headers:  map[string]string{},
+					BasePath: "/api/v2/teams",
+					Headers: map[string]string{
+						"Accept":       "application/json",
+						"Content-Type": "application/json",
+					},
 				},
 				RESTResponse{
-					Delay:            "100ms",
+					Delay:            "2ms",
 					GetStatusCode:    200,
 					PostStatusCode:   201,
 					PutStatusCode:    200,
 					PatchStatusCode:  200,
 					DeleteStatusCode: 204,
-					ListProperty:     "data",
 					Headers:          map[string]string{},
+					ListKey:          "data",
 				},
 				RESTStore{
 					Identifier: "_id",
@@ -435,13 +254,11 @@ func TestRESTMockHash(t *testing.T) {
 			false,
 		},
 		{
-			"NotEqual",
+			"DifferentHeaders",
 			RESTMock{
 				RESTExpect{
 					BasePath: "/api/v1/teams",
-					Headers: map[string]string{
-						"Content-Type": "application/json",
-					},
+					Headers:  map[string]string{},
 				},
 				RESTResponse{
 					Delay:            "0",
@@ -450,8 +267,8 @@ func TestRESTMockHash(t *testing.T) {
 					PutStatusCode:    200,
 					PatchStatusCode:  200,
 					DeleteStatusCode: 204,
-					ListProperty:     "",
 					Headers:          map[string]string{},
+					ListKey:          "",
 				},
 				RESTStore{
 					Identifier: "",
@@ -462,18 +279,19 @@ func TestRESTMockHash(t *testing.T) {
 				RESTExpect{
 					BasePath: "/api/v1/teams",
 					Headers: map[string]string{
-						"Content-Type": "application/ld+json",
+						"Accept":       "application/json",
+						"Content-Type": "application/json",
 					},
 				},
 				RESTResponse{
-					Delay:            "100ms",
+					Delay:            "2ms",
 					GetStatusCode:    200,
 					PostStatusCode:   201,
 					PutStatusCode:    200,
 					PatchStatusCode:  200,
 					DeleteStatusCode: 204,
-					ListProperty:     "data",
 					Headers:          map[string]string{},
+					ListKey:          "data",
 				},
 				RESTStore{
 					Identifier: "_id",
@@ -497,20 +315,157 @@ func TestRESTMockHash(t *testing.T) {
 
 func TestRESTMockRegisterRoutes(t *testing.T) {
 	tests := []struct {
-		name          string
-		mock          RESTMock
-		reqMehod      string
-		reqURL        string
-		reqQueries    map[string]string
-		reqHeaders    map[string]string
-		resStatusCode int
-		resHeaders    map[string]string
-		resBody       JSON
-	}{}
+		name                     string
+		mock                     RESTMock
+		reqBasePath              string
+		reqHeaders               map[string]string
+		expectedGetStatusCode    int
+		expectedPostStatusCode   int
+		expectedPutStatusCode    int
+		expectedPatchStatusCode  int
+		expectedDeleteStatusCode int
+		expectedHeaders          map[string]string
+		expectedAllBody          interface{}
+	}{
+		{
+			name: "WithListKey",
+			mock: RESTMock{
+				RESTExpect{
+					BasePath: "/api/v1/teams",
+					Headers: map[string]string{
+						"Accept":       "application/json",
+						"Content-Type": "application/json",
+					},
+				},
+				RESTResponse{
+					Delay:            "2ms",
+					GetStatusCode:    200,
+					PostStatusCode:   201,
+					PutStatusCode:    200,
+					PatchStatusCode:  200,
+					DeleteStatusCode: 204,
+					Headers: map[string]string{
+						"Content-Type": "application/json",
+					},
+					ListKey: "data",
+				},
+				RESTStore{
+					Identifier: "id",
+					Objects: []JSON{
+						{"id": "aaaa", "name": "Back-end"},
+						{"id": "bbbb", "name": "Front-end"},
+					},
+				},
+			},
+			reqBasePath: "/api/v1/teams",
+			reqHeaders: map[string]string{
+				"Accept":       "application/json",
+				"Content-Type": "application/json",
+			},
+			expectedGetStatusCode:    200,
+			expectedPostStatusCode:   201,
+			expectedPutStatusCode:    200,
+			expectedPatchStatusCode:  200,
+			expectedDeleteStatusCode: 204,
+			expectedHeaders: map[string]string{
+				"Content-Type": "application/json",
+			},
+			expectedAllBody: JSON{
+				"data": []interface{}{
+					map[string]interface{}{"id": "aaaa", "name": "Back-end"},
+					map[string]interface{}{"id": "bbbb", "name": "Front-end"},
+				},
+			},
+		},
+	}
 
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			assert.NotNil(t, tc)
+			router := mux.NewRouter()
+			tc.mock.RegisterRoutes(router)
+
+			t.Run("ALL", func(t *testing.T) {
+				req, err := http.NewRequest("GET", tc.reqBasePath, nil)
+				assert.NoError(t, err)
+
+				for k, v := range tc.reqHeaders {
+					req.Header.Add(k, v)
+				}
+
+				res := httptest.NewRecorder()
+				router.ServeHTTP(res, req)
+
+				assert.Equal(t, tc.expectedGetStatusCode, res.Result().StatusCode)
+				for key, val := range tc.expectedHeaders {
+					assert.Equal(t, val, res.Header().Get(key))
+				}
+
+				resBody := JSON{}
+				err = json.NewDecoder(res.Body).Decode(&resBody)
+				assert.NoError(t, err)
+				assert.Equal(t, tc.expectedAllBody, resBody)
+			})
+
+			t.Run("POST", func(t *testing.T) {
+				// TODO:
+			})
+
+			t.Run("GET", func(t *testing.T) {
+				// TODO:
+			})
+
+			t.Run("PUT", func(t *testing.T) {
+				// TODO:
+			})
+
+			t.Run("PATCH", func(t *testing.T) {
+				// TODO:
+			})
+
+			t.Run("DELETE", func(t *testing.T) {
+				// TODO:
+			})
+		})
+	}
+}
+
+func TestDefaultRESTMock(t *testing.T) {
+	tests := []struct {
+		name         string
+		expectedMock RESTMock
+	}{
+		{
+			"OK",
+			RESTMock{
+				RESTExpect{
+					BasePath: "/",
+					Headers:  nil,
+				},
+				RESTResponse{
+					Delay:            "",
+					GetStatusCode:    200,
+					PostStatusCode:   201,
+					PutStatusCode:    200,
+					PatchStatusCode:  200,
+					DeleteStatusCode: 204,
+					Headers: map[string]string{
+						"Content-Type": "application/json",
+					},
+					ListKey: "data",
+				},
+				RESTStore{
+					Identifier: "",
+					Objects:    []JSON{},
+					Directory:  map[interface{}]JSON{},
+				},
+			},
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			mock := DefaultRESTMock()
+			assert.Equal(t, tc.expectedMock, mock)
 		})
 	}
 }
