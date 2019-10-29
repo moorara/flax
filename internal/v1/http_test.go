@@ -90,6 +90,136 @@ func TestHTTPExpectHash(t *testing.T) {
 	}
 }
 
+func TestHTTPExpectSetDefaults(t *testing.T) {
+	tests := []struct {
+		name           string
+		expect         HTTPExpect
+		expectedExpect HTTPExpect
+	}{
+		{
+			"Empty",
+			HTTPExpect{},
+			HTTPExpect{
+				Methods: []string{"GET"},
+				Path:    "/",
+				Prefix:  false,
+				Queries: nil,
+				Headers: nil,
+			},
+		},
+		{
+			"DefaultRequired",
+			HTTPExpect{
+				Path: "/health",
+			},
+			HTTPExpect{
+				Methods: []string{"GET"},
+				Path:    "/health",
+				Prefix:  false,
+				Queries: nil,
+				Headers: nil,
+			},
+		},
+		{
+			"NoDefaultRequired",
+			HTTPExpect{
+				Methods: []string{"POST", "PUT"},
+				Path:    "/api/v1/sendMessage",
+				Prefix:  false,
+				Queries: map[string]string{
+					"tenantId": "[0-9A-Za-z-]+",
+					"groupId":  "[0-9A-Za-z-]+",
+				},
+				Headers: map[string]string{
+					"Accept":       "application/json",
+					"Content-Type": "application/json",
+				},
+			},
+			HTTPExpect{
+				Methods: []string{"POST", "PUT"},
+				Path:    "/api/v1/sendMessage",
+				Prefix:  false,
+				Queries: map[string]string{
+					"tenantId": "[0-9A-Za-z-]+",
+					"groupId":  "[0-9A-Za-z-]+",
+				},
+				Headers: map[string]string{
+					"Accept":       "application/json",
+					"Content-Type": "application/json",
+				},
+			},
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			tc.expect.SetDefaults()
+			assert.Equal(t, tc.expectedExpect, tc.expect)
+		})
+	}
+}
+
+func TestHTTPResponseSetDefaults(t *testing.T) {
+	tests := []struct {
+		name             string
+		response         HTTPResponse
+		expectedResponse HTTPResponse
+	}{
+		{
+			"Empty",
+			HTTPResponse{},
+			HTTPResponse{
+				Delay:      "",
+				StatusCode: 200,
+				Headers:    nil,
+				Body:       nil,
+			},
+		},
+		{
+			"DefaultRequired",
+			HTTPResponse{
+				Delay: "10ms",
+			},
+			HTTPResponse{
+				Delay:      "10ms",
+				StatusCode: 200,
+				Headers:    nil,
+				Body:       nil,
+			},
+		},
+		{
+			"NoDefaultRequired",
+			HTTPResponse{
+				Delay:      "10ms",
+				StatusCode: 201,
+				Headers: map[string]string{
+					"Content-Type": "application/json",
+				},
+				Body: JSON{
+					"id": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+				},
+			},
+			HTTPResponse{
+				Delay:      "10ms",
+				StatusCode: 201,
+				Headers: map[string]string{
+					"Content-Type": "application/json",
+				},
+				Body: JSON{
+					"id": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+				},
+			},
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			tc.response.SetDefaults()
+			assert.Equal(t, tc.expectedResponse, tc.response)
+		})
+	}
+}
+
 func TestHTTPResponseHandler(t *testing.T) {
 	tests := []struct {
 		name               string
@@ -101,8 +231,8 @@ func TestHTTPResponseHandler(t *testing.T) {
 		{
 			name: "OK",
 			response: HTTPResponse{
-				Delay:      "2ms",
-				StatusCode: 200,
+				Delay:      "10ms",
+				StatusCode: 201,
 				Headers: map[string]string{
 					"Content-Type": "application/json",
 				},
@@ -110,7 +240,7 @@ func TestHTTPResponseHandler(t *testing.T) {
 					"id": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
 				},
 			},
-			expectedStatusCode: 200,
+			expectedStatusCode: 201,
 			expectedHeaders: map[string]string{
 				"Content-Type": "application/json",
 			},
@@ -140,6 +270,48 @@ func TestHTTPResponseHandler(t *testing.T) {
 	}
 }
 
+func TestHTTPForwardSetDefaults(t *testing.T) {
+	tests := []struct {
+		name            string
+		forward         HTTPForward
+		expectedForward HTTPForward
+	}{
+		{
+			"Empty",
+			HTTPForward{},
+			HTTPForward{
+				Delay:   "",
+				To:      "",
+				Headers: nil,
+			},
+		},
+		{
+			"NoDefaultRequired",
+			HTTPForward{
+				Delay: "10ms",
+				To:    "http://example.com",
+				Headers: map[string]string{
+					"Is-Test": "true",
+				},
+			},
+			HTTPForward{
+				Delay: "10ms",
+				To:    "http://example.com",
+				Headers: map[string]string{
+					"Is-Test": "true",
+				},
+			},
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			tc.forward.SetDefaults()
+			assert.Equal(t, tc.expectedForward, tc.forward)
+		})
+	}
+}
+
 func TestHTTPForwardHandler(t *testing.T) {
 	tests := []struct {
 		name               string
@@ -151,7 +323,7 @@ func TestHTTPForwardHandler(t *testing.T) {
 		{
 			name: "OK",
 			forward: HTTPForward{
-				Delay: "1ms",
+				Delay: "10ms",
 				To:    "http://example.com",
 				Headers: map[string]string{
 					"Is-Test": "true",
@@ -231,10 +403,13 @@ func TestHTTPMockHash(t *testing.T) {
 					},
 				},
 				HTTPResponse: &HTTPResponse{
-					Delay:      "2ms",
+					Delay:      "10ms",
 					StatusCode: 201,
 					Headers: map[string]string{
 						"Content-Type": "application/json",
+					},
+					Body: JSON{
+						"id": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
 					},
 				},
 			},
@@ -277,7 +452,7 @@ func TestHTTPMockHash(t *testing.T) {
 					},
 				},
 				HTTPForward: &HTTPForward{
-					Delay: "1ms",
+					Delay: "10ms",
 					To:    "http://example.com",
 					Headers: map[string]string{
 						"Is-Test": "true",
@@ -323,10 +498,13 @@ func TestHTTPMockHash(t *testing.T) {
 					},
 				},
 				HTTPResponse: &HTTPResponse{
-					Delay:      "2ms",
+					Delay:      "10ms",
 					StatusCode: 201,
 					Headers: map[string]string{
 						"Content-Type": "application/json",
+					},
+					Body: JSON{
+						"id": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
 					},
 				},
 			},
@@ -369,7 +547,7 @@ func TestHTTPMockHash(t *testing.T) {
 					},
 				},
 				HTTPForward: &HTTPForward{
-					Delay: "1ms",
+					Delay: "10ms",
 					To:    "http://example.com",
 					Headers: map[string]string{
 						"Is-Test": "true",
@@ -387,6 +565,109 @@ func TestHTTPMockHash(t *testing.T) {
 			} else {
 				assert.NotEqual(t, tc.m1.Hash(), tc.m2.Hash())
 			}
+		})
+	}
+}
+
+func TestHTTPMockSetDefaults(t *testing.T) {
+	tests := []struct {
+		name         string
+		mock         HTTPMock
+		expectedMock HTTPMock
+	}{
+		{
+			"Empty",
+			HTTPMock{},
+			HTTPMock{
+				HTTPExpect: HTTPExpect{
+					Methods: []string{"GET"},
+					Path:    "/",
+					Prefix:  false,
+					Queries: nil,
+					Headers: nil,
+				},
+				HTTPResponse: &HTTPResponse{
+					Delay:      "",
+					StatusCode: 200,
+					Headers:    nil,
+					Body:       nil,
+				},
+			},
+		},
+		{
+			"WithHTTPResponse",
+			HTTPMock{
+				HTTPResponse: &HTTPResponse{},
+			},
+			HTTPMock{
+				HTTPExpect: HTTPExpect{
+					Methods: []string{"GET"},
+					Path:    "/",
+					Prefix:  false,
+					Queries: nil,
+					Headers: nil,
+				},
+				HTTPResponse: &HTTPResponse{
+					Delay:      "",
+					StatusCode: 200,
+					Headers:    nil,
+					Body:       nil,
+				},
+			},
+		},
+		{
+			"WithHTTPForward",
+			HTTPMock{
+				HTTPForward: &HTTPForward{},
+			},
+			HTTPMock{
+				HTTPExpect: HTTPExpect{
+					Methods: []string{"GET"},
+					Path:    "/",
+					Prefix:  false,
+					Queries: nil,
+					Headers: nil,
+				},
+				HTTPForward: &HTTPForward{
+					Delay:   "",
+					To:      "",
+					Headers: nil,
+				},
+			},
+		},
+		{
+			"WithHTTPResponseAndHTTPForward",
+			HTTPMock{
+				HTTPResponse: &HTTPResponse{},
+				HTTPForward:  &HTTPForward{},
+			},
+			HTTPMock{
+				HTTPExpect: HTTPExpect{
+					Methods: []string{"GET"},
+					Path:    "/",
+					Prefix:  false,
+					Queries: nil,
+					Headers: nil,
+				},
+				HTTPResponse: &HTTPResponse{
+					Delay:      "",
+					StatusCode: 200,
+					Headers:    nil,
+					Body:       nil,
+				},
+				HTTPForward: &HTTPForward{
+					Delay:   "",
+					To:      "",
+					Headers: nil,
+				},
+			},
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			tc.mock.SetDefaults()
+			assert.Equal(t, tc.expectedMock, tc.mock)
 		})
 	}
 }
@@ -420,7 +701,7 @@ func TestHTTPMockRegisterRoutes(t *testing.T) {
 					},
 				},
 				HTTPResponse: &HTTPResponse{
-					Delay:      "2ms",
+					Delay:      "10ms",
 					StatusCode: 200,
 					Headers: map[string]string{
 						"Content-Type": "application/json",
@@ -465,7 +746,7 @@ func TestHTTPMockRegisterRoutes(t *testing.T) {
 					},
 				},
 				HTTPResponse: &HTTPResponse{
-					Delay:      "2ms",
+					Delay:      "10ms",
 					StatusCode: 200,
 					Headers: map[string]string{
 						"Content-Type": "application/json",
@@ -510,7 +791,7 @@ func TestHTTPMockRegisterRoutes(t *testing.T) {
 					},
 				},
 				HTTPForward: &HTTPForward{
-					Delay: "1ms",
+					Delay: "10ms",
 					To:    "http://example.com",
 					Headers: map[string]string{
 						"Is-Test": "true",

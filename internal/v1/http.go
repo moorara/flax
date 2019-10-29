@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"hash/fnv"
 	"net/http"
+	"path"
 	"time"
 
 	"github.com/gorilla/mux"
@@ -32,12 +33,28 @@ func (e HTTPExpect) Hash() uint64 {
 	return h.Sum64()
 }
 
+// SetDefaults set default values for empty fields.
+func (e *HTTPExpect) SetDefaults() {
+	if len(e.Methods) == 0 {
+		e.Methods = []string{"GET"}
+	}
+
+	e.Path = path.Clean("/" + e.Path)
+}
+
 // HTTPResponse represents a mock http response.
 type HTTPResponse struct {
 	Delay      string            `json:"delay" yaml:"delay"`
 	StatusCode int               `json:"status" yaml:"status"`
 	Headers    map[string]string `json:"headers" yaml:"headers"`
 	Body       interface{}       `json:"body" yaml:"body"`
+}
+
+// SetDefaults set default values for empty fields.
+func (r *HTTPResponse) SetDefaults() {
+	if r.StatusCode < 100 || r.StatusCode > 599 {
+		r.StatusCode = 200
+	}
 }
 
 // Handler returns an http handler.
@@ -59,6 +76,11 @@ type HTTPForward struct {
 	Delay   string            `json:"delay" yaml:"delay"`
 	To      string            `json:"to" yaml:"to"`
 	Headers map[string]string `json:"headers" yaml:"headers"`
+}
+
+// SetDefaults set default values for empty fields.
+func (f *HTTPForward) SetDefaults() {
+	// Nothing to set as default
 }
 
 // Handler returns an http handler.
@@ -89,6 +111,23 @@ type HTTPMock struct {
 // Hash calculates a hash for an http mock based on the http expectation.
 func (m HTTPMock) Hash() uint64 {
 	return m.HTTPExpect.Hash()
+}
+
+// SetDefaults set default values for empty fields.
+func (m *HTTPMock) SetDefaults() {
+	m.HTTPExpect.SetDefaults()
+
+	if m.HTTPResponse == nil && m.HTTPForward == nil {
+		m.HTTPResponse = &HTTPResponse{}
+	}
+
+	if m.HTTPResponse != nil {
+		m.HTTPResponse.SetDefaults()
+	}
+
+	if m.HTTPForward != nil {
+		m.HTTPForward.SetDefaults()
+	}
 }
 
 // RegisterRoutes configure routes for an http mock.
@@ -125,9 +164,6 @@ func DefaultHTTPMock() HTTPMock {
 		},
 		HTTPResponse: &HTTPResponse{
 			StatusCode: 200,
-			Headers: map[string]string{
-				"Content-Type": "application/json",
-			},
 		},
 	}
 }

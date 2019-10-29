@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"hash/fnv"
 	"net/http"
+	"path"
 	"path/filepath"
 	"time"
 
@@ -28,6 +29,11 @@ func (e RESTExpect) Hash() uint64 {
 	return h.Sum64()
 }
 
+// SetDefaults set default values for empty fields.
+func (e *RESTExpect) SetDefaults() {
+	e.BasePath = path.Clean("/" + e.BasePath)
+}
+
 // RESTResponse represents a mock RESTful response.
 type RESTResponse struct {
 	Delay            string            `json:"delay" yaml:"delay"`
@@ -40,11 +46,47 @@ type RESTResponse struct {
 	ListKey          string            `json:"listKey" yaml:"list_key"`
 }
 
+// SetDefaults set default values for empty fields.
+func (r *RESTResponse) SetDefaults() {
+	if r.GetStatusCode < 100 || r.GetStatusCode > 599 {
+		r.GetStatusCode = 200
+	}
+
+	if r.PostStatusCode < 100 || r.PostStatusCode > 599 {
+		r.PostStatusCode = 201
+	}
+
+	if r.PutStatusCode < 100 || r.PutStatusCode > 599 {
+		r.PutStatusCode = 200
+	}
+
+	if r.PatchStatusCode < 100 || r.PatchStatusCode > 599 {
+		r.PatchStatusCode = 200
+	}
+
+	if r.DeleteStatusCode < 100 || r.DeleteStatusCode > 599 {
+		r.DeleteStatusCode = 204
+	}
+
+	if r.Headers == nil {
+		r.Headers = map[string]string{
+			"Content-Type": "application/json",
+		}
+	}
+}
+
 // RESTStore represents a collection of RESTful resources.
 type RESTStore struct {
 	Identifier string               `json:"identifier" yaml:"identifier"`
 	Objects    []JSON               `json:"objects" yaml:"objects"`
 	Directory  map[interface{}]JSON `json:"-" yaml:"-"`
+}
+
+// SetDefaults set default values for empty fields.
+func (s *RESTStore) SetDefaults() {
+	if s.Objects == nil {
+		s.Objects = []JSON{}
+	}
 }
 
 // Index creates a map of identifiers to objects.
@@ -69,6 +111,13 @@ type RESTMock struct {
 // Hash calculates a hash for a rest mock based on the rest expectation.
 func (m RESTMock) Hash() uint64 {
 	return m.RESTExpect.Hash()
+}
+
+// SetDefaults set default values for empty fields.
+func (m *RESTMock) SetDefaults() {
+	m.RESTExpect.SetDefaults()
+	m.RESTResponse.SetDefaults()
+	m.RESTStore.SetDefaults()
 }
 
 // RegisterRoutes configure routes for a rest mock
@@ -238,12 +287,6 @@ func (m RESTMock) RegisterRoutes(router *mux.Router) {
 
 // DefaultRESTMock returns a default RESTMock.
 func DefaultRESTMock() RESTMock {
-	restStore := RESTStore{
-		Objects: []JSON{},
-	}
-
-	restStore.Index()
-
 	return RESTMock{
 		RESTExpect{
 			BasePath: "/",
@@ -257,8 +300,11 @@ func DefaultRESTMock() RESTMock {
 			Headers: map[string]string{
 				"Content-Type": "application/json",
 			},
-			ListKey: "data",
+			ListKey: "",
 		},
-		restStore,
+		RESTStore{
+			Objects:   []JSON{},
+			Directory: map[interface{}]JSON{},
+		},
 	}
 }
