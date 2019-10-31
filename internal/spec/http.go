@@ -116,7 +116,7 @@ func (m HTTPMock) RegisterRoutes(router *mux.Router) {
 			for key, val := range m.HTTPResponse.Headers {
 				res.Header().Set(key, val)
 			}
-			json.NewEncoder(res).Encode(m.HTTPResponse.Body)
+			_ = json.NewEncoder(res).Encode(m.HTTPResponse.Body)
 		})
 	} else if m.HTTPForward != nil {
 		forwardDelay, _ := time.ParseDuration(m.HTTPForward.Delay)
@@ -124,7 +124,7 @@ func (m HTTPMock) RegisterRoutes(router *mux.Router) {
 			// TODO: implement proxy
 			time.Sleep(forwardDelay)
 			res.WriteHeader(http.StatusNotImplemented)
-			json.NewEncoder(res).Encode(JSON{
+			_ = json.NewEncoder(res).Encode(JSON{
 				"message": "this functionality is not yet available!",
 			})
 		})

@@ -137,7 +137,7 @@ func (m RESTMock) RegisterRoutes(router *mux.Router) {
 				}
 			}
 
-			json.NewEncoder(w).Encode(resp)
+			_ = json.NewEncoder(w).Encode(resp)
 		})
 	}
 
@@ -158,7 +158,7 @@ func (m RESTMock) RegisterRoutes(router *mux.Router) {
 					w.Header().Set(key, val)
 				}
 
-				json.NewEncoder(w).Encode(JSON{
+				_ = json.NewEncoder(w).Encode(JSON{
 					"message": "not implemented yet!",
 				})
 			}
@@ -185,7 +185,7 @@ func (m RESTMock) RegisterRoutes(router *mux.Router) {
 					w.Header().Set(key, val)
 				}
 
-				json.NewEncoder(w).Encode(JSON{
+				_ = json.NewEncoder(w).Encode(JSON{
 					"message": "not implemented yet!",
 				})
 			}
@@ -212,7 +212,7 @@ func (m RESTMock) RegisterRoutes(router *mux.Router) {
 					w.Header().Set(key, val)
 				}
 
-				json.NewEncoder(w).Encode(JSON{
+				_ = json.NewEncoder(w).Encode(JSON{
 					"message": "not implemented yet!",
 				})
 			}
@@ -239,7 +239,7 @@ func (m RESTMock) RegisterRoutes(router *mux.Router) {
 					w.Header().Set(key, val)
 				}
 
-				json.NewEncoder(w).Encode(JSON{
+				_ = json.NewEncoder(w).Encode(JSON{
 					"message": "not implemented yet!",
 				})
 			}
@@ -266,7 +266,7 @@ func (m RESTMock) RegisterRoutes(router *mux.Router) {
 					w.Header().Set(key, val)
 				}
 
-				json.NewEncoder(w).Encode(JSON{
+				_ = json.NewEncoder(w).Encode(JSON{
 					"message": "not implemented yet!",
 				})
 			}

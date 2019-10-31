@@ -52,7 +52,11 @@ func ReadSpec(path string) (*Spec, error) {
 
 	spec := new(Spec)
 	if err := json.NewDecoder(f).Decode(spec); err != nil {
-		f.Seek(0, 0) // Reset file offset
+		// Reset file offset
+		if _, err := f.Seek(0, 0); err != nil {
+			return nil, fmt.Errorf("file error: %s", err)
+		}
+
 		if err := yaml.NewDecoder(f).Decode(spec); err != nil {
 			return nil, fmt.Errorf("unknown spec file: %s", err)
 		}
