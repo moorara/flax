@@ -7,6 +7,7 @@ import (
 
 // Mock is the interface for a mock type.
 type Mock interface {
+	String() string
 	Hash() uint64
 	RegisterRoutes(*mux.Router)
 }
@@ -25,23 +26,21 @@ func NewMockService(logger *log.Logger) *MockService {
 	}
 }
 
-// Add registers new mocks.
+// Add registers a new mock.
 // If a mock already exists, it will be replaced.
-func (s *MockService) Add(mocks ...Mock) {
-	for _, m := range mocks {
-		key := m.Hash()
-		s.mocks[key] = m
-		s.logger.DebugKV("message", "mock added.")
-	}
+func (s *MockService) Add(m Mock) {
+	key := m.Hash()
+	s.mocks[key] = m
+
+	s.logger.DebugKV("message", "mock added", "mock", m.String())
 }
 
-// Delete deregisters mocks.
-func (s *MockService) Delete(mocks ...Mock) {
-	for _, m := range mocks {
-		key := m.Hash()
-		delete(s.mocks, key)
-		s.logger.DebugKV("message", "mock deleted.")
-	}
+// Delete deregisters an existing mock.
+func (s *MockService) Delete(m Mock) {
+	key := m.Hash()
+	delete(s.mocks, key)
+
+	s.logger.DebugKV("message", "mock deleted", "mock", m.String())
 }
 
 // Router creates a new router for mocks.

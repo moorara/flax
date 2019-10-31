@@ -113,6 +113,51 @@ func TestHTTPMockSetDefaults(t *testing.T) {
 	}
 }
 
+func TestHTTPMockString(t *testing.T) {
+	tests := []struct {
+		name           string
+		mock           HTTPMock
+		expectedString string
+	}{
+		{
+			"Empty",
+			HTTPMock{},
+			" ",
+		},
+		{
+			"OK",
+			HTTPMock{
+				HTTPExpect: HTTPExpect{
+					Methods: []string{"POST", "PUT"},
+					Path:    "/api/v1/sendMessage",
+					Prefix:  false,
+					Queries: map[string]string{
+						"tenantId": "[0-9A-Fa-f-]+",
+						"groupId":  "[0-9A-Fa-f-]+",
+					},
+					Headers: map[string]string{
+						"Accept":       "application/json",
+						"Content-Type": "application/json",
+					},
+				},
+				HTTPResponse: &HTTPResponse{
+					Delay:      "",
+					StatusCode: 200,
+					Headers:    map[string]string{},
+				},
+			},
+			"POST|PUT /api/v1/sendMessage",
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			str := tc.mock.String()
+			assert.Equal(t, tc.expectedString, str)
+		})
+	}
+}
+
 func TestHTTPMockHash(t *testing.T) {
 	tests := []struct {
 		name          string

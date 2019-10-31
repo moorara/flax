@@ -2,6 +2,7 @@ package spec
 
 import (
 	"encoding/json"
+	"fmt"
 	"hash/fnv"
 	"net/http"
 	"path"
@@ -90,6 +91,11 @@ func (m *RESTMock) SetDefaults() {
 	if m.RESTStore.Objects == nil {
 		m.RESTStore.Objects = []JSON{}
 	}
+}
+
+// String returns a string representation of the mock.
+func (m RESTMock) String() string {
+	return fmt.Sprintf("%s", m.RESTExpect.BasePath)
 }
 
 // Hash calculates a hash for a rest mock based on the rest expectation.

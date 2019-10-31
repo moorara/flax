@@ -118,6 +118,54 @@ func TestRESTMockSetDefaults(t *testing.T) {
 	}
 }
 
+func TestRESTMockkString(t *testing.T) {
+	tests := []struct {
+		name           string
+		mock           RESTMock
+		expectedString string
+	}{
+		{
+			"Empty",
+			RESTMock{},
+			"",
+		},
+		{
+			"OK",
+			RESTMock{
+				RESTExpect{
+					BasePath: "/api/v1/teams",
+					Headers: map[string]string{
+						"Accept":       "application/json",
+						"Content-Type": "application/json",
+					},
+				},
+				RESTResponse{
+					Delay:            "",
+					GetStatusCode:    200,
+					PostStatusCode:   201,
+					PutStatusCode:    200,
+					PatchStatusCode:  200,
+					DeleteStatusCode: 204,
+					Headers:          map[string]string{},
+					ListKey:          "",
+				},
+				RESTStore{
+					Identifier: "",
+					Objects:    []JSON{},
+				},
+			},
+			"/api/v1/teams",
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			str := tc.mock.String()
+			assert.Equal(t, tc.expectedString, str)
+		})
+	}
+}
+
 func TestRESTMockHash(t *testing.T) {
 	tests := []struct {
 		name          string

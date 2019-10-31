@@ -6,6 +6,7 @@ import (
 	"hash/fnv"
 	"net/http"
 	"path"
+	"strings"
 	"time"
 
 	"github.com/gorilla/mux"
@@ -63,6 +64,15 @@ func (m *HTTPMock) SetDefaults() {
 	if m.HTTPForward != nil {
 		// No default
 	}
+}
+
+// String returns a string representation of the mock.
+func (m HTTPMock) String() string {
+	return fmt.Sprintf(
+		"%s %s",
+		strings.Join(m.HTTPExpect.Methods, "|"),
+		m.HTTPExpect.Path,
+	)
 }
 
 // Hash calculates a hash for an http mock based on the http expectation.
