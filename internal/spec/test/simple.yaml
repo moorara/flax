@@ -1,0 +1,17 @@
+http:
+  - path: /health
+  - methods: [ POST, PUT ]
+    path: /api/v1/sendMessage
+    response:
+      status: 201
+      body: {
+        "id": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"
+      }
+
+rest:
+  - base_path: /api/v1/teams
+    store:
+      objects: [
+        { "_id": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa", "name": "Back-end" },
+        { "_id": "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb", "name": "Front-end" }
+      ]

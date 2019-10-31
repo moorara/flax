@@ -1,5 +1,7 @@
-[![Build Status][circleci-image]][circleci-url]
+[![Build Status][workflow-image]][workflow-url]
 [![Go Report Card][goreport-image]][goreport-url]
+[![Test Coverage][coverage-image]][coverage-url]
+[![Maintainability][maintainability-image]][maintainability-url]
 
 # Flax
 
@@ -19,23 +21,21 @@ Supporting the following features:
 
   - **Connection**
     - [ ] HTTP
-    - [ ] HTTPS
+    - [ ] HTTPS (TLS, mTLS)
   - **Mocking**
     - [ ] Basic HTTP
     - [ ] RESTful HTTP
-    - [ ] GraphQL
-  - **Verifying**
-    - [ ] *TBD*
   - **Configuration**
-    - [x] YAML
-    - [x] JSON
+    - [x] YAML Spec
+    - [x] JSON Spec
+    - [ ] REST API
+  - **Verification**
     - [ ] REST API
 
 ## Development
 
 | Command            | Description                                          |
 |--------------------|------------------------------------------------------|
-| `make run`         | Run the application locally                          |
 | `make build`       | Build the binary locally                             |
 | `make build-all`   | Build the binary locally for all supported platforms |
 | `make test`        | Run the unit tests                                   |
@@ -47,8 +47,11 @@ Supporting the following features:
 | `make load-docker` | Load saved image from disk                           |
 
 
-[circleci-url]: https://circleci.com/gh/moorara/flax/tree/master
-[circleci-image]: https://circleci.com/gh/moorara/flax/tree/master.svg?style=shield
-
+[workflow-url]: https://github.com/moorara/flax/actions
+[workflow-image]: https://github.com/moorara/flax/workflows/Main/badge.svg
 [goreport-url]: https://goreportcard.com/report/github.com/moorara/flax
 [goreport-image]: https://goreportcard.com/badge/github.com/moorara/flax
+[coverage-url]: https://codeclimate.com/github/moorara/flax/test_coverage
+[coverage-image]: https://api.codeclimate.com/v1/badges/3c6a95f727fc89be77eb/test_coverage
+[maintainability-url]: https://codeclimate.com/github/moorara/flax/maintainability
+[maintainability-image]: https://api.codeclimate.com/v1/badges/3c6a95f727fc89be77eb/maintainability

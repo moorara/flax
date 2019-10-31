@@ -1,0 +1,79 @@
+{
+  "config": {
+    "httpPort": 9080,
+    "httpsPort": 9443
+  },
+
+  "http": [
+    {
+      "methods": [ "GET" ],
+      "path": "/health",
+      "response": {
+        "status": 200
+      }
+    },
+    {
+      "methods": [ "GET" ],
+      "path": "/app",
+      "forward": {
+        "to": "http://example.com",
+        "headers": {
+          "Is-Test": "true"
+        }
+      }
+    },
+    {
+      "methods": [ "POST", "PUT" ],
+      "path": "/api/v1/sendMessage",
+      "queries": {
+        "tenantId": "[0-9A-Fa-f-]+",
+        "groupId": "[0-9A-Fa-f-]+"
+      },
+      "headers": {
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+        "Authorization": "Bearer .*"
+      },
+      "response": {
+        "delay": "10ms",
+        "status": 201,
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "id": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"
+        }
+      }
+    }
+  ],
+
+  "rest": [
+    {
+      "basePath": "/api/v1/teams",
+      "headers": {
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+        "Authorization": "Bearer .*"
+      },
+      "response": {
+        "delay": "10ms",
+        "getStatus": 200,
+        "postStatus": 201,
+        "putStatus": 200,
+        "patchStatus": 200,
+        "deleteStatus": 204,
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "listKey": "data"
+      },
+      "store": {
+        "identifier": "_id",
+        "objects": [
+          { "_id": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa", "name": "Back-end" },
+          { "_id": "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb", "name": "Front-end" }
+        ]
+      }
+    }
+  ]
+}
