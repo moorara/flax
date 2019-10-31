@@ -20,32 +20,32 @@ func TestNewMockService(t *testing.T) {
 
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			ms := NewMockService(tc.logger)
+			service := NewMockService(tc.logger)
 
-			assert.NotNil(t, ms)
-			assert.NotNil(t, ms.logger)
-			assert.NotNil(t, ms.mocks)
+			assert.NotNil(t, service)
+			assert.NotNil(t, service.logger)
+			assert.NotNil(t, service.mocks)
 		})
 	}
 }
 
-func TestAdd(t *testing.T) {
+func TestMockServiceAdd(t *testing.T) {
 	tests := []struct {
 		name          string
-		svc           *MockService
-		mocks         []Mock
+		service       *MockService
+		mock          Mock
 		expectedMocks []Mock
 	}{
 		{
-			name: "HTTPMocks",
-			svc: &MockService{
+			name: "HTTPMock",
+			service: &MockService{
 				logger: log.NewVoidLogger(),
 				mocks:  map[uint64]Mock{},
 			},
 		},
 		{
-			name: "RESTMocks",
-			svc: &MockService{
+			name: "RESTMock",
+			service: &MockService{
 				logger: log.NewVoidLogger(),
 				mocks:  map[uint64]Mock{},
 			},
@@ -59,23 +59,23 @@ func TestAdd(t *testing.T) {
 	}
 }
 
-func TestDelete(t *testing.T) {
+func TestMockServiceDelete(t *testing.T) {
 	tests := []struct {
 		name          string
-		svc           *MockService
-		mocks         []Mock
+		service       *MockService
+		mock          Mock
 		expectedMocks []Mock
 	}{
 		{
-			name: "HTTPMocks",
-			svc: &MockService{
+			name: "HTTPMock",
+			service: &MockService{
 				logger: log.NewVoidLogger(),
 				mocks:  map[uint64]Mock{},
 			},
 		},
 		{
-			name: "RESTMocks",
-			svc: &MockService{
+			name: "RESTMock",
+			service: &MockService{
 				logger: log.NewVoidLogger(),
 				mocks:  map[uint64]Mock{},
 			},
@@ -89,10 +89,10 @@ func TestDelete(t *testing.T) {
 	}
 }
 
-func TestRouter(t *testing.T) {
+func TestMockServiceRouter(t *testing.T) {
 	tests := []struct {
-		name string
-		svc  *MockService
+		name    string
+		service *MockService
 	}{}
 
 	for _, tc := range tests {
