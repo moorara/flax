@@ -19,21 +19,6 @@ type RESTExpect struct {
 	Headers  map[string]string `json:"headers" yaml:"headers"`
 }
 
-// Hash calculates a hash for a rest expectation.
-func (e RESTExpect) Hash() uint64 {
-	h := fnv.New64a()
-
-	hashString(h, e.BasePath)
-	hashStringMap(h, true, e.Headers)
-
-	return h.Sum64()
-}
-
-// SetDefaults set default values for empty fields.
-func (e *RESTExpect) SetDefaults() {
-	e.BasePath = path.Clean("/" + e.BasePath)
-}
-
 // RESTResponse represents a mock RESTful response.
 type RESTResponse struct {
 	Delay            string            `json:"delay" yaml:"delay"`
@@ -46,47 +31,11 @@ type RESTResponse struct {
 	ListKey          string            `json:"listKey" yaml:"list_key"`
 }
 
-// SetDefaults set default values for empty fields.
-func (r *RESTResponse) SetDefaults() {
-	if r.GetStatusCode < 100 || r.GetStatusCode > 599 {
-		r.GetStatusCode = 200
-	}
-
-	if r.PostStatusCode < 100 || r.PostStatusCode > 599 {
-		r.PostStatusCode = 201
-	}
-
-	if r.PutStatusCode < 100 || r.PutStatusCode > 599 {
-		r.PutStatusCode = 200
-	}
-
-	if r.PatchStatusCode < 100 || r.PatchStatusCode > 599 {
-		r.PatchStatusCode = 200
-	}
-
-	if r.DeleteStatusCode < 100 || r.DeleteStatusCode > 599 {
-		r.DeleteStatusCode = 204
-	}
-
-	if r.Headers == nil {
-		r.Headers = map[string]string{
-			"Content-Type": "application/json",
-		}
-	}
-}
-
 // RESTStore represents a collection of RESTful resources.
 type RESTStore struct {
 	Identifier string               `json:"identifier" yaml:"identifier"`
 	Objects    []JSON               `json:"objects" yaml:"objects"`
 	Directory  map[interface{}]JSON `json:"-" yaml:"-"`
-}
-
-// SetDefaults set default values for empty fields.
-func (s *RESTStore) SetDefaults() {
-	if s.Objects == nil {
-		s.Objects = []JSON{}
-	}
 }
 
 // Index creates a map of identifiers to objects.
@@ -108,21 +57,54 @@ type RESTMock struct {
 	RESTStore    `json:"store" yaml:"store"`
 }
 
-// Hash calculates a hash for a rest mock based on the rest expectation.
-func (m RESTMock) Hash() uint64 {
-	return m.RESTExpect.Hash()
-}
-
 // SetDefaults set default values for empty fields.
 func (m *RESTMock) SetDefaults() {
-	m.RESTExpect.SetDefaults()
-	m.RESTResponse.SetDefaults()
-	m.RESTStore.SetDefaults()
+	m.RESTExpect.BasePath = path.Clean("/" + m.RESTExpect.BasePath)
+
+	if m.RESTResponse.GetStatusCode == 0 {
+		m.RESTResponse.GetStatusCode = 200
+	}
+
+	if m.RESTResponse.PostStatusCode == 0 {
+		m.RESTResponse.PostStatusCode = 201
+	}
+
+	if m.RESTResponse.PutStatusCode == 0 {
+		m.RESTResponse.PutStatusCode = 200
+	}
+
+	if m.RESTResponse.PatchStatusCode == 0 {
+		m.RESTResponse.PatchStatusCode = 200
+	}
+
+	if m.RESTResponse.DeleteStatusCode == 0 {
+		m.RESTResponse.DeleteStatusCode = 204
+	}
+
+	if m.RESTResponse.Headers == nil {
+		m.RESTResponse.Headers = map[string]string{
+			"Content-Type": "application/json",
+		}
+	}
+
+	if m.RESTStore.Objects == nil {
+		m.RESTStore.Objects = []JSON{}
+	}
 }
 
-// RegisterRoutes configure routes for a rest mock
+// Hash calculates a hash for a rest mock based on the rest expectation.
+func (m RESTMock) Hash() uint64 {
+	h := fnv.New64a()
+
+	hashString(h, m.RESTExpect.BasePath)
+	hashStringMap(h, true, m.RESTExpect.Headers)
+
+	return h.Sum64()
+}
+
+// RegisterRoutes configure routes for a rest mock.
 func (m RESTMock) RegisterRoutes(router *mux.Router) {
-	d, _ := time.ParseDuration(m.Delay)
+	delay, _ := time.ParseDuration(m.Delay)
 
 	// GET /
 	{
@@ -132,8 +114,9 @@ func (m RESTMock) RegisterRoutes(router *mux.Router) {
 			route.HeadersRegexp(header, pattern)
 		}
 
+		// TODO: implement filtering through query parameters
 		route.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			time.Sleep(d)
+			time.Sleep(delay)
 			w.WriteHeader(m.RESTResponse.GetStatusCode)
 			for key, val := range m.RESTResponse.Headers {
 				w.Header().Set(key, val)
@@ -163,7 +146,7 @@ func (m RESTMock) RegisterRoutes(router *mux.Router) {
 		// TODO: Finish implementation
 		route.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			if m.RESTStore.Directory != nil {
-				time.Sleep(d)
+				time.Sleep(delay)
 				w.WriteHeader(m.RESTResponse.PostStatusCode)
 				for key, val := range m.RESTResponse.Headers {
 					w.Header().Set(key, val)
@@ -190,7 +173,7 @@ func (m RESTMock) RegisterRoutes(router *mux.Router) {
 			// id := vars["id"]
 
 			if m.RESTStore.Directory != nil {
-				time.Sleep(d)
+				time.Sleep(delay)
 				w.WriteHeader(m.RESTResponse.GetStatusCode)
 				for key, val := range m.RESTResponse.Headers {
 					w.Header().Set(key, val)
@@ -217,7 +200,7 @@ func (m RESTMock) RegisterRoutes(router *mux.Router) {
 			// id := vars["id"]
 
 			if m.RESTStore.Directory != nil {
-				time.Sleep(d)
+				time.Sleep(delay)
 				w.WriteHeader(m.RESTResponse.PutStatusCode)
 				for key, val := range m.RESTResponse.Headers {
 					w.Header().Set(key, val)
@@ -244,7 +227,7 @@ func (m RESTMock) RegisterRoutes(router *mux.Router) {
 			// id := vars["id"]
 
 			if m.RESTStore.Directory != nil {
-				time.Sleep(d)
+				time.Sleep(delay)
 				w.WriteHeader(m.RESTResponse.PatchStatusCode)
 				for key, val := range m.RESTResponse.Headers {
 					w.Header().Set(key, val)
@@ -271,7 +254,7 @@ func (m RESTMock) RegisterRoutes(router *mux.Router) {
 			// id := vars["id"]
 
 			if m.RESTStore.Directory != nil {
-				time.Sleep(d)
+				time.Sleep(delay)
 				w.WriteHeader(m.RESTResponse.DeleteStatusCode)
 				for key, val := range m.RESTResponse.Headers {
 					w.Header().Set(key, val)
@@ -282,29 +265,5 @@ func (m RESTMock) RegisterRoutes(router *mux.Router) {
 				})
 			}
 		})
-	}
-}
-
-// DefaultRESTMock returns a default RESTMock.
-func DefaultRESTMock() RESTMock {
-	return RESTMock{
-		RESTExpect{
-			BasePath: "/",
-		},
-		RESTResponse{
-			GetStatusCode:    200,
-			PostStatusCode:   201,
-			PutStatusCode:    200,
-			PatchStatusCode:  200,
-			DeleteStatusCode: 204,
-			Headers: map[string]string{
-				"Content-Type": "application/json",
-			},
-			ListKey: "",
-		},
-		RESTStore{
-			Objects:   []JSON{},
-			Directory: map[interface{}]JSON{},
-		},
 	}
 }

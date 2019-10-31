@@ -377,51 +377,6 @@ var (
 	}
 )
 
-func TestConfigSetDefaults(t *testing.T) {
-	tests := []struct {
-		name           string
-		config         Config
-		expectedConfig Config
-	}{
-		{
-			"Empty",
-			Config{},
-			Config{
-				HTTPPort:  8080,
-				HTTPSPort: 8443,
-			},
-		},
-		{
-			"DefaultRequired",
-			Config{
-				HTTPPort: 8000,
-			},
-			Config{
-				HTTPPort:  8000,
-				HTTPSPort: 8443,
-			},
-		},
-		{
-			"NoDefaultRequired",
-			Config{
-				HTTPPort:  9080,
-				HTTPSPort: 9443,
-			},
-			Config{
-				HTTPPort:  9080,
-				HTTPSPort: 9443,
-			},
-		},
-	}
-
-	for _, tc := range tests {
-		t.Run(tc.name, func(t *testing.T) {
-			tc.config.SetDefaults()
-			assert.Equal(t, tc.expectedConfig, tc.config)
-		})
-	}
-}
-
 func TestDefaultSpec(t *testing.T) {
 	tests := []struct {
 		name         string

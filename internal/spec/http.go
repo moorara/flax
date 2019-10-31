@@ -20,55 +20,12 @@ type HTTPExpect struct {
 	Headers map[string]string `json:"headers" yaml:"headers"`
 }
 
-// Hash calculates a hash for an http expectation.
-func (e HTTPExpect) Hash() uint64 {
-	h := fnv.New64a()
-
-	hashStringSlice(h, true, e.Methods)
-	hashString(h, e.Path)
-	hashBool(h, e.Prefix)
-	hashStringMap(h, true, e.Queries)
-	hashStringMap(h, true, e.Headers)
-
-	return h.Sum64()
-}
-
-// SetDefaults set default values for empty fields.
-func (e *HTTPExpect) SetDefaults() {
-	if len(e.Methods) == 0 {
-		e.Methods = []string{"GET"}
-	}
-
-	e.Path = path.Clean("/" + e.Path)
-}
-
 // HTTPResponse represents a mock http response.
 type HTTPResponse struct {
 	Delay      string            `json:"delay" yaml:"delay"`
 	StatusCode int               `json:"status" yaml:"status"`
 	Headers    map[string]string `json:"headers" yaml:"headers"`
 	Body       interface{}       `json:"body" yaml:"body"`
-}
-
-// SetDefaults set default values for empty fields.
-func (r *HTTPResponse) SetDefaults() {
-	if r.StatusCode < 100 || r.StatusCode > 599 {
-		r.StatusCode = 200
-	}
-}
-
-// Handler returns an http handler.
-func (r HTTPResponse) Handler() http.HandlerFunc {
-	d, _ := time.ParseDuration(r.Delay)
-
-	return func(res http.ResponseWriter, req *http.Request) {
-		time.Sleep(d)
-		res.WriteHeader(r.StatusCode)
-		for key, val := range r.Headers {
-			res.Header().Set(key, val)
-		}
-		json.NewEncoder(res).Encode(r.Body)
-	}
 }
 
 // HTTPForward represents a forwarder for an http request.
@@ -78,29 +35,6 @@ type HTTPForward struct {
 	Headers map[string]string `json:"headers" yaml:"headers"`
 }
 
-// SetDefaults set default values for empty fields.
-func (f *HTTPForward) SetDefaults() {
-	// Nothing to set as default
-}
-
-// Handler returns an http handler.
-func (f HTTPForward) Handler() http.HandlerFunc {
-	d, _ := time.ParseDuration(f.Delay)
-
-	// TODO: implement proxy
-	return func(res http.ResponseWriter, req *http.Request) {
-		time.Sleep(d)
-		res.WriteHeader(http.StatusNotImplemented)
-		for key, val := range f.Headers {
-			res.Header().Add(key, val)
-		}
-
-		json.NewEncoder(res).Encode(JSON{
-			"message": "this functionality is not yet available!",
-		})
-	}
-}
-
 // HTTPMock represents an http mock.
 type HTTPMock struct {
 	HTTPExpect    `json:",inline" yaml:",inline"`
@@ -108,31 +42,47 @@ type HTTPMock struct {
 	*HTTPForward  `json:"forward" yaml:"forward"`
 }
 
-// Hash calculates a hash for an http mock based on the http expectation.
-func (m HTTPMock) Hash() uint64 {
-	return m.HTTPExpect.Hash()
-}
-
 // SetDefaults set default values for empty fields.
 func (m *HTTPMock) SetDefaults() {
-	m.HTTPExpect.SetDefaults()
+	if len(m.HTTPExpect.Methods) == 0 {
+		m.HTTPExpect.Methods = []string{"GET"}
+	}
+
+	m.HTTPExpect.Path = path.Clean("/" + m.HTTPExpect.Path)
 
 	if m.HTTPResponse == nil && m.HTTPForward == nil {
 		m.HTTPResponse = &HTTPResponse{}
 	}
 
 	if m.HTTPResponse != nil {
-		m.HTTPResponse.SetDefaults()
+		if m.HTTPResponse.StatusCode == 0 {
+			m.HTTPResponse.StatusCode = 200
+		}
 	}
 
 	if m.HTTPForward != nil {
-		m.HTTPForward.SetDefaults()
+		// No default
 	}
+}
+
+// Hash calculates a hash for an http mock based on the http expectation.
+func (m HTTPMock) Hash() uint64 {
+	h := fnv.New64a()
+
+	hashStringSlice(h, true, m.HTTPExpect.Methods)
+	hashString(h, m.HTTPExpect.Path)
+	hashBool(h, m.HTTPExpect.Prefix)
+	hashStringMap(h, true, m.HTTPExpect.Queries)
+	hashStringMap(h, true, m.HTTPExpect.Headers)
+
+	return h.Sum64()
 }
 
 // RegisterRoutes configure routes for an http mock.
 func (m HTTPMock) RegisterRoutes(router *mux.Router) {
-	route := router.Methods(m.HTTPExpect.Methods...)
+	route := router.NewRoute()
+
+	route.Methods(m.HTTPExpect.Methods...)
 
 	if m.HTTPExpect.Prefix {
 		route.PathPrefix(m.HTTPExpect.Path)
@@ -149,21 +99,24 @@ func (m HTTPMock) RegisterRoutes(router *mux.Router) {
 	}
 
 	if m.HTTPResponse != nil {
-		route.HandlerFunc(m.HTTPResponse.Handler())
+		responseDelay, _ := time.ParseDuration(m.HTTPResponse.Delay)
+		route.HandlerFunc(func(res http.ResponseWriter, req *http.Request) {
+			time.Sleep(responseDelay)
+			res.WriteHeader(m.HTTPResponse.StatusCode)
+			for key, val := range m.HTTPResponse.Headers {
+				res.Header().Set(key, val)
+			}
+			json.NewEncoder(res).Encode(m.HTTPResponse.Body)
+		})
 	} else if m.HTTPForward != nil {
-		route.HandlerFunc(m.HTTPForward.Handler())
-	}
-}
-
-// DefaultHTTPMock returns a default HTTPMock.
-func DefaultHTTPMock() HTTPMock {
-	return HTTPMock{
-		HTTPExpect: HTTPExpect{
-			Methods: []string{"GET"},
-			Path:    "/",
-		},
-		HTTPResponse: &HTTPResponse{
-			StatusCode: 200,
-		},
+		forwardDelay, _ := time.ParseDuration(m.HTTPForward.Delay)
+		route.HandlerFunc(func(res http.ResponseWriter, req *http.Request) {
+			// TODO: implement proxy
+			time.Sleep(forwardDelay)
+			res.WriteHeader(http.StatusNotImplemented)
+			json.NewEncoder(res).Encode(JSON{
+				"message": "this functionality is not yet available!",
+			})
+		})
 	}
 }

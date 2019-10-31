@@ -14,17 +14,6 @@ type Config struct {
 	HTTPSPort uint16 `json:"httpsPort" yaml:"https_port"`
 }
 
-// SetDefaults set default values for empty fields.
-func (c *Config) SetDefaults() {
-	if c.HTTPPort == 0 {
-		c.HTTPPort = 8080
-	}
-
-	if c.HTTPSPort == 0 {
-		c.HTTPSPort = 8443
-	}
-}
-
 // Spec has all the specifications.
 type Spec struct {
 	Config    Config     `json:"config" yaml:"config"`
@@ -34,14 +23,17 @@ type Spec struct {
 
 // DefaultSpec returns a default Spec.
 func DefaultSpec() *Spec {
-	config := Config{}
-	config.SetDefaults()
+	config := Config{
+		HTTPPort:  8080,
+		HTTPSPort: 8443,
+	}
+
+	httpMock := HTTPMock{}
+	httpMock.SetDefaults()
 
 	return &Spec{
 		config,
-		[]HTTPMock{
-			DefaultHTTPMock(),
-		},
+		[]HTTPMock{httpMock},
 		[]RESTMock{},
 	}
 }
@@ -66,7 +58,13 @@ func ReadSpec(path string) (*Spec, error) {
 		}
 	}
 
-	spec.Config.SetDefaults()
+	if spec.Config.HTTPPort == 0 {
+		spec.Config.HTTPPort = 8080
+	}
+
+	if spec.Config.HTTPSPort == 0 {
+		spec.Config.HTTPSPort = 8443
+	}
 
 	for i := range spec.HTTPMocks {
 		spec.HTTPMocks[i].SetDefaults()
