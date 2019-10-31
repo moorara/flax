@@ -50,9 +50,7 @@ func hashString(h hash.Hash, args ...string) {
 
 func hashStringSlice(h hash.Hash, canonical bool, s []string) {
 	buff := make([]string, len(s))
-	for i := range s {
-		buff[i] = s[i]
-	}
+	copy(buff, s)
 
 	if canonical {
 		sort.Strings(buff)
