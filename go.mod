@@ -7,5 +7,5 @@ require (
 	github.com/moorara/konfig v0.3.2
 	github.com/moorara/observe v0.4.0
 	github.com/stretchr/testify v1.4.0
-	gopkg.in/yaml.v2 v2.2.4
+	gopkg.in/yaml.v3 v3.0.0-20191026110619-0b21df46bc1d
 )
