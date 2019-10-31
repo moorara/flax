@@ -32,7 +32,7 @@ var (
 		[]RESTMock{},
 	}
 
-	specSimpleJSON = &Spec{
+	specSimple = &Spec{
 		Config: Config{
 			HTTPPort:  8080,
 			HTTPSPort: 8443,
@@ -103,78 +103,7 @@ var (
 		},
 	}
 
-	specSimpleYAML = &Spec{
-		Config: Config{
-			HTTPPort:  8080,
-			HTTPSPort: 8443,
-		},
-		HTTPMocks: []HTTPMock{
-			HTTPMock{
-				HTTPExpect: HTTPExpect{
-					Methods: []string{"GET"},
-					Path:    "/health",
-					Prefix:  false,
-					Queries: nil,
-					Headers: nil,
-				},
-				HTTPResponse: &HTTPResponse{
-					Delay:      "",
-					StatusCode: 200,
-					Headers:    nil,
-					Body:       nil,
-				},
-			},
-			HTTPMock{
-				HTTPExpect: HTTPExpect{
-					Methods: []string{"POST", "PUT"},
-					Path:    "/api/v1/sendMessage",
-					Prefix:  false,
-					Queries: nil,
-					Headers: nil,
-				},
-				HTTPResponse: &HTTPResponse{
-					Delay:      "",
-					StatusCode: 201,
-					Headers:    nil,
-					Body: map[interface{}]interface{}{
-						"id": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
-					},
-				},
-			},
-		},
-		RESTMocks: []RESTMock{
-			RESTMock{
-				RESTExpect{
-					BasePath: "/api/v1/teams",
-					Headers:  nil,
-				},
-				RESTResponse{
-					Delay:            "",
-					GetStatusCode:    200,
-					PostStatusCode:   201,
-					PutStatusCode:    200,
-					PatchStatusCode:  200,
-					DeleteStatusCode: 204,
-					Headers: map[string]string{
-						"Content-Type": "application/json",
-					},
-					ListKey: "",
-				},
-				RESTStore{
-					Objects: []JSON{
-						{"_id": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa", "name": "Back-end"},
-						{"_id": "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb", "name": "Front-end"},
-					},
-					Directory: map[interface{}]JSON{
-						"aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa": {"_id": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa", "name": "Back-end"},
-						"bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb": {"_id": "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb", "name": "Front-end"},
-					},
-				},
-			},
-		},
-	}
-
-	specFullJSON = &Spec{
+	specFull = &Spec{
 		Config: Config{
 			HTTPPort:  9080,
 			HTTPSPort: 9443,
@@ -233,107 +162,6 @@ var (
 						"Content-Type": "application/json",
 					},
 					Body: map[string]interface{}{
-						"id": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
-					},
-				},
-			},
-		},
-		RESTMocks: []RESTMock{
-			RESTMock{
-				RESTExpect{
-					BasePath: "/api/v1/teams",
-					Headers: map[string]string{
-						"Accept":        "application/json",
-						"Content-Type":  "application/json",
-						"Authorization": "Bearer .*",
-					},
-				},
-				RESTResponse{
-					Delay:            "10ms",
-					GetStatusCode:    200,
-					PostStatusCode:   201,
-					PutStatusCode:    200,
-					PatchStatusCode:  200,
-					DeleteStatusCode: 204,
-					Headers: map[string]string{
-						"Content-Type": "application/json",
-					},
-					ListKey: "data",
-				},
-				RESTStore{
-					Identifier: "_id",
-					Objects: []JSON{
-						{"_id": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa", "name": "Back-end"},
-						{"_id": "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb", "name": "Front-end"},
-					},
-					Directory: map[interface{}]JSON{
-						"aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa": {"_id": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa", "name": "Back-end"},
-						"bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb": {"_id": "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb", "name": "Front-end"},
-					},
-				},
-			},
-		},
-	}
-
-	specFullYAML = &Spec{
-		Config: Config{
-			HTTPPort:  9080,
-			HTTPSPort: 9443,
-		},
-		HTTPMocks: []HTTPMock{
-			HTTPMock{
-				HTTPExpect: HTTPExpect{
-					Methods: []string{"GET"},
-					Path:    "/health",
-					Prefix:  false,
-					Queries: nil,
-					Headers: nil,
-				},
-				HTTPResponse: &HTTPResponse{
-					Delay:      "",
-					StatusCode: 200,
-					Headers:    nil,
-					Body:       nil,
-				},
-			},
-			HTTPMock{
-				HTTPExpect: HTTPExpect{
-					Methods: []string{"GET"},
-					Path:    "/app",
-					Prefix:  false,
-					Queries: nil,
-					Headers: nil,
-				},
-				HTTPForward: &HTTPForward{
-					Delay: "",
-					To:    "http://example.com",
-					Headers: map[string]string{
-						"Is-Test": "true",
-					},
-				},
-			},
-			HTTPMock{
-				HTTPExpect: HTTPExpect{
-					Methods: []string{"POST", "PUT"},
-					Path:    "/api/v1/sendMessage",
-					Prefix:  false,
-					Queries: map[string]string{
-						"tenantId": "[0-9A-Fa-f-]+",
-						"groupId":  "[0-9A-Fa-f-]+",
-					},
-					Headers: map[string]string{
-						"Accept":        "application/json",
-						"Content-Type":  "application/json",
-						"Authorization": "Bearer .*",
-					},
-				},
-				HTTPResponse: &HTTPResponse{
-					Delay:      "10ms",
-					StatusCode: 201,
-					Headers: map[string]string{
-						"Content-Type": "application/json",
-					},
-					Body: map[interface{}]interface{}{
 						"id": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
 					},
 				},
@@ -443,25 +271,25 @@ func TestReadSpec(t *testing.T) {
 			name:          "SimpleJSON",
 			path:          "./test/simple.json",
 			expectedError: "",
-			expectedSpec:  specSimpleJSON,
+			expectedSpec:  specSimple,
 		},
 		{
 			name:          "SimpleYAML",
 			path:          "./test/simple.yaml",
 			expectedError: "",
-			expectedSpec:  specSimpleYAML,
+			expectedSpec:  specSimple,
 		},
 		{
 			name:          "FullJSON",
 			path:          "./test/full.json",
 			expectedError: "",
-			expectedSpec:  specFullJSON,
+			expectedSpec:  specFull,
 		},
 		{
 			name:          "FullYAML",
 			path:          "./test/full.yaml",
 			expectedError: "",
-			expectedSpec:  specFullYAML,
+			expectedSpec:  specFull,
 		},
 	}
 
