@@ -20,11 +20,11 @@ Flax is a service for mocking your APIs for testing purposes.
 Supporting the following features:
 
   - **Connection**
-    - [ ] HTTP
+    - [x] HTTP
     - [ ] HTTPS (TLS, mTLS)
   - **Mocking**
-    - [ ] Basic HTTP
-    - [ ] RESTful HTTP
+    - [x] Basic HTTP
+    - [x] RESTful HTTP
   - **Configuration**
     - [x] YAML Spec
     - [x] JSON Spec
