@@ -2,11 +2,11 @@ package main
 
 import (
 	"flag"
-	"fmt"
 	"os"
 
 	"github.com/moorara/konfig"
 	"github.com/moorara/observe/log"
+	"github.com/moorara/observe/xhttp"
 
 	"github.com/moorara/flax/cmd/config"
 	"github.com/moorara/flax/cmd/server"
@@ -15,7 +15,9 @@ import (
 	"github.com/moorara/flax/internal/spec"
 )
 
-const specErr = 10
+const (
+	specErr = 10
+)
 
 func main() {
 	// Reading configuration values
@@ -47,20 +49,23 @@ func main() {
 		os.Exit(specErr)
 	}
 
+	// Set up mock service
 	mockService := service.NewMockService(logger)
-
-	// FIXME:
-	for _, m := range s.HTTPMocks {
-		mockService.Add(&m)
+	for i := range s.HTTPMocks {
+		mockService.Add(&s.HTTPMocks[i])
+	}
+	for i := range s.RESTMocks {
+		mockService.Add(&s.RESTMocks[i])
 	}
 
-	// FIXME:
-	for _, m := range s.RESTMocks {
-		mockService.Add(&m)
-	}
+	// Set up http middleware
+	mid := xhttp.NewServerMiddleware(
+		xhttp.ServerLogging(logger),
+	)
 
-	port := fmt.Sprintf(":%d", s.Config.HTTPPort)
+	// Set up api server
 	router := mockService.Router()
-	httpMockServer := server.NewHTTPMockServer(logger, port, router)
-	httpMockServer.Start()
+	handler := mid.Logging(router.ServeHTTP)
+	apiServer := server.NewAPIServer(logger, s.Config.HTTPPort, handler)
+	apiServer.Start()
 }
