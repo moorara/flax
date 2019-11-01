@@ -13,7 +13,39 @@ Flax is a service for mocking your APIs for testing purposes.
 
 ### Docker
 
+Create a _spec_ file named `flax.yaml` as follows:
+
+```yaml
+http:
+  - path: /health
+  - methods: POST
+    path: /api/v1/sendMessage
+    response:
+      status: 201
+      body: {
+        "id": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"
+      }
+
+rest:
+  - base_path: /api/v1/teams
+    store:
+      objects: [
+        { "_id": "aaaaaaaaaaaaaaaaaaaaaaaa", "name": "Back-end" },
+        { "_id": "bbbbbbbbbbbbbbbbbbbbbbbb", "name": "Front-end" }
+      ]
+```
+
+Then run the following command:
+
+```
+docker container run -d -P -v "./flax.yaml:/flax.yaml" moorara/flax:latest
+```
+
+Now, open your browser and hit `http://localhost:8080/api/v1/teams`.
+
 ### Examples
+
+You can find more examples [here](./examples).
 
 ## TO-DO
 

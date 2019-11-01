@@ -1,20 +1,9 @@
-#
-# REF:
-#   https://help.github.com/en/articles/workflow-syntax-for-github-actions#jobsjob_idstepsif
-#   https://help.github.com/en/articles/contexts-and-expression-syntax-for-github-actions#github-context
-#   https://help.github.com/en/articles/virtual-environments-for-github-actions#creating-and-using-secrets-encrypted-variables
-#
-
-name: Main
-on: push
+name: Release
+on:
+  push:
+    tags:
+      - v[0-9].[0-9]+.[0-9]+
 jobs:
-  lint:
-    name: Lint
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@master
-      - name: Lint
-        uses: moorara/actions/go-lint@master
   test:
     name: Test
     runs-on: ubuntu-latest
@@ -32,11 +21,10 @@ jobs:
       - uses: moorara/actions/semver@master
       - name: Build
         run: make docker docker_tag=$(cat VERSION)
-      - name: Push
-        if: github.ref == 'refs/heads/master'
+      - name: Push Latest
         env:
           DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
           DOCKERHUB_PASSWORD: ${{ secrets.DOCKERHUB_PASSWORD }}
         run: |
           docker login -u "$DOCKERHUB_USERNAME" -p "$DOCKERHUB_PASSWORD"
-          make push docker_tag=$(cat VERSION)
+          make push push-latest docker_tag=$(cat VERSION)
