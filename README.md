@@ -18,7 +18,7 @@ Create a _spec_ file named `flax.yaml` as follows:
 ```yaml
 http:
   - path: /health
-  - methods: POST
+  - methods: [ POST ]
     path: /api/v1/sendMessage
     response:
       status: 201
@@ -38,7 +38,7 @@ rest:
 Then run the following command:
 
 ```
-docker container run -d -P -v "./flax.yaml:/flax.yaml" moorara/flax:latest
+docker container run -d -p "8080:8080" -p "9999:9999" -v "$PWD/flax.yaml:/flax.yaml" moorara/flax:latest
 ```
 
 Now, open your browser and hit `http://localhost:8080/api/v1/teams`.
