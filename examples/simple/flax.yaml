@@ -1,6 +1,6 @@
 http:
   - path: /health
-  - methods: POST
+  - methods: [ POST ]
     path: /api/v1/sendMessage
     response:
       status: 201
