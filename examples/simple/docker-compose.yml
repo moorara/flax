@@ -1,0 +1,13 @@
+version: "3.7"
+services:
+  flax:
+    image: moorara/flax:latest
+    hostname: flax
+    container_name: flax
+    restart: always
+    ports:
+      - "8080:8080"
+      - "9999:9999"
+    volumes:
+      - "./flax.yaml:/flax.yaml"
+    command: [ "-spec.file=/flax.yaml" ]

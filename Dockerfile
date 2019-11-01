@@ -10,7 +10,6 @@ RUN cherry build -cross-compile=false
 # FINAL STAGE
 FROM alpine:3.10
 EXPOSE 8080 9999
-HEALTHCHECK --interval=5s --timeout=3s --retries=3 CMD wget -qO - http://localhost:8080/liveness || exit 1
 RUN apk add --no-cache ca-certificates
 COPY --from=builder /flax/bin/flax /usr/local/bin/
 RUN chown -R nobody:nogroup /usr/local/bin/flax
