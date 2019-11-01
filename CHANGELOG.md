@@ -1,5 +1,18 @@
 # Change Log
 
+## [v0.1.2](https://github.com/moorara/flax/tree/v0.1.2) (2019-11-01)
+[Full Changelog](https://github.com/moorara/flax/compare/v0.1.1...v0.1.2)
+
+**Closed issues:**
+
+- Add examples [\#17](https://github.com/moorara/flax/issues/17)
+
+**Merged pull requests:**
+
+- Fix examples [\#55](https://github.com/moorara/flax/pull/55) ([moorara](https://github.com/moorara))
+- Update cherry.yaml [\#54](https://github.com/moorara/flax/pull/54) ([moorara](https://github.com/moorara))
+- Add examples [\#53](https://github.com/moorara/flax/pull/53) ([moorara](https://github.com/moorara))
+
 ## [v0.1.1](https://github.com/moorara/flax/tree/v0.1.1) (2019-10-31)
 [Full Changelog](https://github.com/moorara/flax/compare/v0.1.0...v0.1.1)
 
