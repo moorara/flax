@@ -3,7 +3,7 @@ version: "1.0"
 language: go
 
 build:
-  binary_file: flax
+  binary_file: bin/flax
   cross_compile: true
 
 release:
