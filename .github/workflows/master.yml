@@ -19,9 +19,9 @@ jobs:
     steps:
       - uses: actions/checkout@master
       - uses: moorara/actions/semver@master
-      - name: Build
+      - name: Build Image
         run: make docker docker_tag=$(cat VERSION)
-      - name: Push
+      - name: Push Image
         env:
           DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
           DOCKERHUB_PASSWORD: ${{ secrets.DOCKERHUB_PASSWORD }}
