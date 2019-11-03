@@ -4,27 +4,18 @@ on:
     tags:
       - v[0-9].[0-9]+.[0-9]+
 jobs:
-  test:
-    name: Test
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@master
-      - name: Test
-        uses: moorara/actions/go-cover@master
-        with:
-          codeclimate_reporter_id: ${{ secrets.CODECLIMATE_REPORTER_ID }}
   docker:
     name: Docker
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@master
       - uses: moorara/actions/semver@master
-      - name: Build
+      - name: Build Latest Image
         run: make docker docker_tag=$(cat VERSION)
-      - name: Push Latest
+      - name: Push Latest Image
         env:
           DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
           DOCKERHUB_PASSWORD: ${{ secrets.DOCKERHUB_PASSWORD }}
         run: |
           docker login -u "$DOCKERHUB_USERNAME" -p "$DOCKERHUB_PASSWORD"
-          make push push-latest docker_tag=$(cat VERSION)
+          make push-latest docker_tag=$(cat VERSION)
