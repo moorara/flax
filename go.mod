@@ -3,7 +3,7 @@ module github.com/moorara/flax
 go 1.13
 
 require (
-	github.com/gorilla/mux v1.7.3
+	github.com/gorilla/mux v1.7.4
 	github.com/moorara/konfig v0.4.0
 	github.com/moorara/observe v0.4.2
 	github.com/stretchr/testify v1.4.0
