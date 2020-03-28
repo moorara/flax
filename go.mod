@@ -1,11 +1,11 @@
 module github.com/moorara/flax
 
-go 1.13
+go 1.14
 
 require (
 	github.com/gorilla/mux v1.7.4
 	github.com/moorara/konfig v0.4.1
 	github.com/moorara/observe v0.4.2
 	github.com/stretchr/testify v1.5.1
-	gopkg.in/yaml.v3 v3.0.0-20191026110619-0b21df46bc1d
+	gopkg.in/yaml.v3 v3.0.0-20200313102051-9f266ea9e77c
 )
