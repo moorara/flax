@@ -3,18 +3,18 @@ package service
 import (
 	"testing"
 
-	"github.com/moorara/observe/log"
+	"github.com/moorara/log"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestNewMockService(t *testing.T) {
 	tests := []struct {
 		name   string
-		logger *log.Logger
+		logger log.Logger
 	}{
 		{
 			name:   "OK",
-			logger: log.NewVoidLogger(),
+			logger: log.NewNopLogger(),
 		},
 	}
 
@@ -39,14 +39,14 @@ func TestMockServiceAdd(t *testing.T) {
 		{
 			name: "HTTPMock",
 			service: &MockService{
-				logger: log.NewVoidLogger(),
+				logger: log.NewNopLogger(),
 				mocks:  map[uint64]Mock{},
 			},
 		},
 		{
 			name: "RESTMock",
 			service: &MockService{
-				logger: log.NewVoidLogger(),
+				logger: log.NewNopLogger(),
 				mocks:  map[uint64]Mock{},
 			},
 		},
@@ -69,14 +69,14 @@ func TestMockServiceDelete(t *testing.T) {
 		{
 			name: "HTTPMock",
 			service: &MockService{
-				logger: log.NewVoidLogger(),
+				logger: log.NewNopLogger(),
 				mocks:  map[uint64]Mock{},
 			},
 		},
 		{
 			name: "RESTMock",
 			service: &MockService{
-				logger: log.NewVoidLogger(),
+				logger: log.NewNopLogger(),
 				mocks:  map[uint64]Mock{},
 			},
 		},

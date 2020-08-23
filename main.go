@@ -4,15 +4,13 @@ import (
 	"flag"
 	"os"
 
-	"github.com/moorara/konfig"
-	"github.com/moorara/observe/log"
-	"github.com/moorara/observe/xhttp"
-
 	"github.com/moorara/flax/cmd/config"
 	"github.com/moorara/flax/cmd/server"
 	"github.com/moorara/flax/internal/service"
 	"github.com/moorara/flax/internal/spec"
 	"github.com/moorara/flax/version"
+	"github.com/moorara/konfig"
+	"github.com/moorara/log"
 )
 
 const (
@@ -27,7 +25,7 @@ func main() {
 	flag.Parse()
 
 	// Create an instance logger
-	logger := log.NewLogger(log.Options{
+	logger := log.NewKit(log.Options{
 		Name:  config.Global.Name,
 		Level: config.Global.LogLevel,
 	})
@@ -58,14 +56,8 @@ func main() {
 		mockService.Add(&s.RESTMocks[i])
 	}
 
-	// Set up http middleware
-	mid := xhttp.NewServerMiddleware(
-		xhttp.ServerLogging(logger),
-	)
-
 	// Set up api server
 	router := mockService.Router()
-	handler := mid.Logging(router.ServeHTTP)
-	apiServer := server.NewAPIServer(logger, s.Config.HTTPPort, handler)
+	apiServer := server.NewAPIServer(logger, s.Config.HTTPPort, router)
 	apiServer.Start()
 }
