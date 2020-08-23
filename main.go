@@ -10,9 +10,9 @@ import (
 
 	"github.com/moorara/flax/cmd/config"
 	"github.com/moorara/flax/cmd/server"
-	"github.com/moorara/flax/cmd/version"
 	"github.com/moorara/flax/internal/service"
 	"github.com/moorara/flax/internal/spec"
+	"github.com/moorara/flax/version"
 )
 
 const (
@@ -35,7 +35,7 @@ func main() {
 	// Log binary information
 	logger = logger.With(
 		"bin.version", version.Version,
-		"bin.revision", version.Revision,
+		"bin.commit", version.Commit,
 		"bin.branch", version.Branch,
 		"bin.goVersion", version.GoVersion,
 		"bin.buildTool", version.BuildTool,
