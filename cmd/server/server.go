@@ -9,7 +9,7 @@ import (
 	"syscall"
 
 	"github.com/moorara/flax/cmd/config"
-	"github.com/moorara/observe/log"
+	"github.com/moorara/log"
 )
 
 // HTTPServer is the interface for http.Server
@@ -20,12 +20,12 @@ type HTTPServer interface {
 
 // APIServer is an http server for mocked http endpoints.
 type APIServer struct {
-	logger *log.Logger
+	logger log.Logger
 	server HTTPServer
 }
 
 // NewAPIServer creates an http mock server.
-func NewAPIServer(logger *log.Logger, port uint16, handler http.Handler) *APIServer {
+func NewAPIServer(logger log.Logger, port uint16, handler http.Handler) *APIServer {
 	addr := fmt.Sprintf(":%d", port)
 
 	return &APIServer{

@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/moorara/observe/log"
+	"github.com/moorara/log"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -27,13 +27,13 @@ func (m *mockHTTPServer) Shutdown(ctx context.Context) error {
 func TestNewAPIServer(t *testing.T) {
 	tests := []struct {
 		name    string
-		logger  *log.Logger
+		logger  log.Logger
 		port    uint16
 		handler http.Handler
 	}{
 		{
 			"OK",
-			log.NewVoidLogger(),
+			log.NewNopLogger(),
 			8080,
 			http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {}),
 		},
@@ -60,7 +60,7 @@ func TestAPIServerStart(t *testing.T) {
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
 			apiServer := &APIServer{
-				logger: log.NewVoidLogger(),
+				logger: log.NewNopLogger(),
 				server: tc.server,
 			}
 
