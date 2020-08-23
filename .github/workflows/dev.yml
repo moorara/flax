@@ -33,7 +33,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@master
-      - uses: moorara/actions/semver@master
+        with:
+          fetch-depth: 0
       - name: Build
         uses: moorara/actions/cherry@master
         with:

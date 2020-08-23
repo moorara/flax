@@ -3,7 +3,6 @@ FROM golang:1.15-alpine as builder
 RUN apk add --no-cache git
 WORKDIR /repo
 COPY . .
-ENV CGO_ENABLED=0
 RUN wget -qO - https://git.io/JeCX6 | sh
 RUN cherry build -cross-compile=false
 
