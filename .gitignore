@@ -1,18 +1,18 @@
 # Compiled files
-main
-flax
-flax-*
+/main
+/flax
 
 # Build directories
-/bin
-/build
+/bin/**
+/build/**
 
 # Test files
 *.log
 *.out
 *.test
-cover.html
-coverage.html
+
+# Misc files
+*.html
 
 # Exceptions
 !Dockerfile.test
