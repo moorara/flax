@@ -1,17 +1,17 @@
-name: Master
+name: Main
 on:
   push:
     branches:
-      - master
+      - main
 jobs:
   test:
     name: Test
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@master
+      - uses: actions/checkout@v2
       - name: Test
         id: test
-        uses: moorara/actions/go-cover@master
+        uses: moorara/actions/go-cover@main
         with:
           codeclimate_reporter_id: ${{ secrets.CODECLIMATE_REPORTER_ID }}
       - name: Upload Test Report
@@ -23,10 +23,10 @@ jobs:
     name: Docker
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@master
+      - uses: actions/checkout@v2
         with:
           fetch-depth: 0
-      - uses: moorara/actions/semver@master
+      - uses: moorara/actions/semver@main
       - name: Build Image
         run: make docker docker_tag=$(cat .semver)
       - name: Push Image

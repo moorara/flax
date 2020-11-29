@@ -80,7 +80,7 @@ Supporting the following features:
 
 
 [workflow-url]: https://github.com/moorara/flax/actions
-[workflow-image]: https://github.com/moorara/flax/workflows/Master/badge.svg
+[workflow-image]: https://github.com/moorara/flax/workflows/Main/badge.svg
 [goreport-url]: https://goreportcard.com/report/github.com/moorara/flax
 [goreport-image]: https://goreportcard.com/badge/github.com/moorara/flax
 [coverage-url]: https://codeclimate.com/github/moorara/flax/test_coverage

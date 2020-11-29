@@ -8,10 +8,10 @@ jobs:
     name: Docker
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@master
+      - uses: actions/checkout@v2
         with:
           fetch-depth: 0
-      - uses: moorara/actions/semver@master
+      - uses: moorara/actions/semver@main
       - name: Build Latest Image
         run: make docker docker_tag=$(cat .semver)
       - name: Push Latest Image
